@@ -3,6 +3,7 @@
 Everything environment-specific is read from env vars (django-environ),
 with dev-safe defaults. See backend/.env.example.
 """
+
 from datetime import timedelta
 from pathlib import Path
 
@@ -108,7 +109,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "accounts.User"
 
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+    },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
         "OPTIONS": {"min_length": 10},
@@ -141,6 +144,7 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_RATES": {
         "anon": "60/min",
         "user": "600/min",
+        "auth": "10/min",  # login attempts (ScopedRateThrottle on LoginView)
     },
 }
 
@@ -161,6 +165,16 @@ SPECTACULAR_SETTINGS = {
 }
 
 CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
+CORS_ALLOW_CREDENTIALS = True  # refresh cookie (ADR-006/ADR-013)
+
+# Account lockout + refresh-cookie policy (ADR-013)
+ABIS_AUTH = {
+    "LOCKOUT_THRESHOLD": env.int("ABIS_LOCKOUT_THRESHOLD", default=5),
+    "LOCKOUT_MINUTES": env.int("ABIS_LOCKOUT_MINUTES", default=15),
+    "REFRESH_COOKIE_NAME": "abis_refresh",
+    "REFRESH_COOKIE_PATH": "/api/v1/auth/",
+    "REFRESH_COOKIE_SAMESITE": "Lax",
+}
 
 # ---------------------------------------------------------------- celery / channels
 CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="redis://localhost:6379/0")

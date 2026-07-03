@@ -62,4 +62,10 @@ Context: `powershell.exe` 5.1 parses BOM-less UTF-8 .ps1 as ANSI; em-dashes in s
 Chosen: scripts/*.ps1 use ASCII punctuation, UTF-8 BOM, `eol=crlf` via .gitattributes; shared helpers live in scripts/common.ps1 (dot-sourced).
 Future impact: keep non-ASCII out of .ps1 files; new scripts dot-source common.ps1 for service startup/health-wait helpers.
 
+## ADR-013
+Date: 2026-07-04 · Decision: Auth contract reconciliation + lockout policy (T-004)
+Context: API_DOCUMENTATION originally said login returns `{access, refresh, user}`; ADR-006 mandates refresh in an httpOnly cookie. The two conflicted.
+Chosen: ADR-006 wins. Login → `{access, user}` + `abis_refresh` httpOnly cookie scoped to `/api/v1/auth/` (SameSite=Lax, Secure in prod); refresh rotates + blacklists (body `{refresh}` accepted as fallback for non-browser clients); logout 205. Lockout: 5 failures → 15 min lock (env-tunable), counter resets on lock/success. `DELETE /users/{id}` deactivates (is_active=False) + blacklists tokens — accounts are never hard-deleted (audit/chain-of-custody). Custom refresh view returns explicit 401 (DRF would map InvalidToken to 403 on authentication-free views).
+Future impact: any new client must use cookie-based refresh; T-020 IDOR/security tests assert these exact semantics.
+
 (Agents: append new ADRs below; never edit past entries.)

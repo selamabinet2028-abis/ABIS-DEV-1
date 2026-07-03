@@ -1,4 +1,5 @@
 """Development settings — Windows 11 local dev (docker Postgres/Redis)."""
+
 from .base import *  # noqa: F401,F403
 
 DEBUG = True

@@ -1,6 +1,6 @@
 # ABIS_MEMORY.md — Persistent Project Memory
 
-> Last updated: 2026-07-04 (T-001..T-003 DONE — scaffolds + dev tooling verified)
+> Last updated: 2026-07-04 (T-001..T-004 DONE — foundation + accounts/RBAC/auth)
 
 ## 1. ABIS Identity
 
@@ -34,10 +34,15 @@ Feature modules begin at T-004.
   **T-003** dev tooling (docker-compose db@5433/redis@6379 — ADR-011,
   setup/dev/test.ps1 — ADR-012, README quickstart; full 6-gate test.ps1 PASS,
   live runserver + celery verified, Pillow CVE fix → 12.3).
-- **Partially completed:** T-002 live login round-trip — blocked on T-004 auth
-  endpoints; re-verify after T-004.
-- **Unfinished:** T-004 onward in `TASK_QUEUE.md` — all feature modules,
-  tests, deployment.
+  **T-004** accounts: RBAC classes (deny-by-default; reuse from
+  `apps.accounts.permissions`), cookie-based JWT auth per ADR-013, lockout,
+  UserActivityLog, users/roles CRUD, role/permission seed migration;
+  63 tests, 98% cov; live login round-trip verified (also closes T-002 note).
+  Shared abstract bases in `common/models.py` (UUIDModel/BaseModel) — use for
+  every new model.
+- **Partially completed:** None.
+- **Unfinished:** T-005 onward in `TASK_QUEUE.md` — audit, basedata,
+  enrollment, matching, remaining modules, T-018 frontend features, deployment.
 
 ## 3. Important Technologies (agreed stack)
 

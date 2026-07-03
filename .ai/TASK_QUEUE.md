@@ -31,8 +31,8 @@ Priority: High · Status: DONE — 2026-07-04: Vite 6 + React 18 TS strict scaff
   Bearer injection, Zustand auth store (access in memory per ADR-006), role-aware
   sidebar/topbar shell, login page, ProtectedRoute w/ silent bootstrap, custom
   toast system. Vitest 10/10 green (MSW), typecheck/lint/build clean, dev server
-  serves :5173. NOTE: live login round-trip pending T-004 auth endpoints —
-  re-verify manually after T-004.
+  serves :5173. Live login round-trip verified 2026-07-04 after T-004
+  (login sets abis_refresh cookie; me/refresh/logout all green over HTTP).
 Files involved: frontend/**
 Expected result: `npm run dev` serves app; login against backend works end-to-end.
 Verification method: Vitest tests for auth store + login form; manual round-trip.
@@ -57,7 +57,14 @@ Description: accounts app — custom User (UUID, role FK, org_unit, badge_number
   (IsAdmin, IsOperator, IsInvestigator, IsSupervisor, IsAuditorReadOnly),
   auth endpoints (login/refresh/logout/password-change), UserActivityLog +
   lockout after 5 failures, users/roles CRUD.
-Priority: High · Status: TODO
+Priority: High · Status: DONE — 2026-07-04: full User model (role/org_unit FKs,
+  badge, lockout fields), Role+Permission catalog seeded via data migration,
+  5 RBAC classes (deny-by-default, admin passes all gates), cookie-based auth
+  endpoints per ADR-013 (login/refresh-rotate/logout/password-change),
+  UserActivityLog, users/roles/permissions CRUD (DELETE user = deactivate).
+  pytest 63/63 green (RBAC matrix, lockout, rotation+blacklist), apps coverage
+  98%, schema --fail-on-warn clean, live HTTP round-trip verified. Minimal
+  basedata.OrgUnit created early for the FK (T-006 extends).
 Verification method: pytest — RBAC deny-by-default matrix, lockout, token rotation.
 
 Task ID: T-005

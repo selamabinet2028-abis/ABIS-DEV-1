@@ -3,14 +3,25 @@
 **Base URL:** `/api/v1/` · **Format:** JSON · **Schema:** auto-generated OpenAPI at
 `/api/schema/` + Swagger UI at `/api/docs/` (drf-spectacular).
 
-## Authentication
+## Authentication (as built in T-004 — see ADR-006/ADR-013)
 
-- `POST /api/v1/auth/login/` → `{access, refresh, user}` (SimpleJWT)
-- `POST /api/v1/auth/refresh/` · `POST /api/v1/auth/logout/` (blacklist refresh)
-- `POST /api/v1/auth/password/change/`
+- `POST /api/v1/auth/login/` `{username, password}` → `{access, user}` **+
+  httpOnly refresh cookie** `abis_refresh` (path `/api/v1/auth/`, SameSite=Lax,
+  Secure outside DEBUG). The refresh token is never in the response body.
+  Lockout: 5 failed attempts → account locked 15 min → 403 with detail
+  (thresholds via `ABIS_LOCKOUT_*` env). Scoped throttle `auth: 10/min`.
+- `POST /api/v1/auth/refresh/` (cookie; `{refresh}` body fallback for
+  API clients) → `{access}` + rotated refresh cookie; old token blacklisted;
+  invalid/blacklisted → 401 `{detail, code: token_not_valid}`.
+- `POST /api/v1/auth/logout/` → 205; blacklists refresh, clears cookie.
+- `POST /api/v1/auth/password/change/` `{current_password, new_password}` →
+  200; validates policy, blacklists all outstanding refresh tokens, clears
+  cookie (re-login required).
 - Header: `Authorization: Bearer <access>` — required on everything except
   the public verification and appointment-booking endpoints.
 - Machine-to-machine (institutions): `X-API-Key` handled by `apimgmt`.
+- Every auth event writes a `UserActivityLog` row (login_success/failed/
+  blocked, account_locked, logout, password_change).
 
 ## Conventions
 
@@ -23,8 +34,13 @@
 ## Endpoints by module (summary — keep in sync with code)
 
 ### accounts
-`GET|POST /users/` · `GET|PATCH|DELETE /users/{id}/` · `GET|POST /roles/` ·
-`GET /permissions/` · `GET /users/me/` · `GET /users/{id}/activity/`
+`GET|POST /users/` · `GET|PATCH|DELETE /users/{id}/` (**DELETE deactivates**,
+accounts are never hard-deleted; outstanding tokens blacklisted) ·
+`CRUD /roles/` (delete → 409 while users assigned) · `GET /permissions/` ·
+`GET /users/me/` (any authenticated) · `GET /users/{id}/activity/`
+(admin + auditor read-only). All admin-gated unless noted; RBAC classes:
+IsAdmin / IsOperator / IsInvestigator / IsSupervisor / IsAuditorReadOnly
+(admin passes every gate).
 
 ### basedata
 `CRUD /persons/` (search by name, person_no, national_id) ·
