@@ -26,7 +26,7 @@ Description: Frontend scaffold — Vite React TS, Tailwind, React Router, axios
   client with JWT interceptor + refresh, TanStack Query, Zustand auth store,
   app shell (sidebar/topbar) with role-aware navigation, login page, protected
   route wrapper, toast system.
-Priority: High · Status: TODO
+Priority: High · Status: IN_PROGRESS
 Files involved: frontend/**
 Expected result: `npm run dev` serves app; login against backend works end-to-end.
 Verification method: Vitest tests for auth store + login form; manual round-trip.
