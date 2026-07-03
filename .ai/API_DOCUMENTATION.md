@@ -1,0 +1,111 @@
+# API_DOCUMENTATION.md — ABIS REST API Contract (v1)
+
+**Base URL:** `/api/v1/` · **Format:** JSON · **Schema:** auto-generated OpenAPI at
+`/api/schema/` + Swagger UI at `/api/docs/` (drf-spectacular).
+
+## Authentication
+
+- `POST /api/v1/auth/login/` → `{access, refresh, user}` (SimpleJWT)
+- `POST /api/v1/auth/refresh/` · `POST /api/v1/auth/logout/` (blacklist refresh)
+- `POST /api/v1/auth/password/change/`
+- Header: `Authorization: Bearer <access>` — required on everything except
+  the public verification and appointment-booking endpoints.
+- Machine-to-machine (institutions): `X-API-Key` handled by `apimgmt`.
+
+## Conventions
+
+- Pagination: `?page=&page_size=` → `{count, next, previous, results}`
+- Filtering/search/order: django-filter + `?search=` + `?ordering=`
+- Errors: `{"detail": str}` or DRF field-error maps; error codes 400/401/403/404/409/422
+- Async jobs return `202 {"job_id": uuid}`; poll `GET .../jobs/{id}/` or subscribe
+  to WebSocket `ws/jobs/{id}/`.
+
+## Endpoints by module (summary — keep in sync with code)
+
+### accounts
+`GET|POST /users/` · `GET|PATCH|DELETE /users/{id}/` · `GET|POST /roles/` ·
+`GET /permissions/` · `GET /users/me/` · `GET /users/{id}/activity/`
+
+### basedata
+`CRUD /persons/` (search by name, person_no, national_id) ·
+`CRUD /org-units/` · `CRUD /lookups/` · `CRUD /investigation-categories/`
+
+### registration & clearance
+`POST /applications/` → creates tracking_no ·
+`GET /applications/?status=&search=` · `GET|PATCH /applications/{id}/` ·
+`POST /applications/{id}/submit/` · `POST /applications/{id}/decision/`
+(`{decision: approved|rejected, note}`) ·
+`POST /applications/{id}/issue-certificate/` → generates PDF + QR ·
+`GET /certificates/{id}/download/`
+
+### verification (PUBLIC)
+`GET /public/verify/{verification_no}/` → `{valid, holder_name_masked, issued_at, expires_at, status}` ·
+`POST /public/verify/qr/` `{qr_payload}` · Institutional: `POST /verify/api/` (API key, full detail)
+
+### appointments (public booking + staff admin)
+`GET /public/stations/` · `GET /public/stations/{id}/slots/?date=` ·
+`POST /public/appointments/` · staff: `CRUD /appointments/`, `CRUD /stations/`
+
+### payments
+`POST /payments/initiate/` `{application_id, method}` → `{payment_id, checkout_ref}` ·
+`POST /payments/webhook/{provider}/` (sandbox simulator in dev) ·
+`GET /payments/?status=` · `POST /payments/reconcile/`
+
+### enrollment
+`POST /enrollments/` `{person_id, station_id}` ·
+`POST /enrollments/{id}/biometrics/` multipart `{modality, position, image}` →
+runs quality check, returns `{record_id, quality_score, accepted}` ·
+`POST /enrollments/{id}/complete/` → triggers DEDUP MatchJob ·
+`GET /biometric-records/{id}/image/`
+
+### matching
+`POST /match/identify/` `{probe: record_id|latent_id, job_type, threshold}` → 202 job ·
+`POST /match/verify/` `{person_id, record_id}` → sync `{match: bool, score}` ·
+`GET /match/jobs/{id}/` → status + candidates ·
+`POST /match/candidates/{id}/decision/` `{decision: hit|no_hit}`
+
+### pis
+`POST /pis/search/` multipart face image → 202 FACE-1N job ·
+`GET /pis/jobs/{id}/candidates/`
+
+### investigation
+`CRUD /cases/` · `POST /cases/{id}/latents/` multipart ·
+`POST /latents/{id}/enhance/` `{operations:[...]}` (contrast, invert, rotate, crop) ·
+`POST /latents/{id}/minutiae/extract/` · `PATCH /latents/{id}/minutiae/` ·
+`POST /latents/{id}/search/` `{job_type: LT-TP|LT-LT}` · `CRUD /cases/{id}/evidence/`
+
+### watchlist
+`CRUD /watchlists/` · `CRUD /watchlists/{id}/entries/` ·
+`GET /watchlist-alerts/?acknowledged=false` · `POST /watchlist-alerts/{id}/ack/` ·
+WebSocket `ws/alerts/` pushes new alerts to supervisors/investigators.
+
+### audit
+`GET /audit-logs/?entity=&entity_id=&actor=&date_from=&date_to=` (auditor/admin only, read-only)
+
+### apimgmt
+`CRUD /external-systems/` · `POST /external-systems/{id}/test/` ·
+`CRUD /api-credentials/` · `GET /integration-logs/`
+
+### notifications
+`GET /sms/outbox/` · `POST /sms/send-test/` · templates CRUD (admin)
+
+### devices
+`CRUD /devices/` · `POST /devices/{id}/capture/` (simulator returns sample image in dev) ·
+`GET /devices/{id}/status/`
+
+### documents
+`POST /documents/` multipart · `GET /documents/{id}/download/` ·
+`POST /documents/nist/export/` `{person_id}` → NIST-style package ·
+`POST /documents/nist/import/`
+
+### reports
+`GET /reports/definitions/` · `POST /reports/run/` `{definition_id, params, format}` → 202 ·
+`GET /reports/runs/{id}/download/` ·
+`GET /dashboard/kpis/` → enrollments today/week, pending applications, running
+match jobs, hit rate, certificates issued, alerts open (role-scoped)
+
+## Error handling
+
+Standard DRF exceptions + custom `ABISError(code, detail)`; all 5xx paths log to
+Sentry-compatible logger and write an AuditLog `system_error` row when they touch
+person/biometric entities.

@@ -1,0 +1,30 @@
+# .clinerules — Rules for Cline / Roo Code / Continue agents on ABIS
+
+## Before writing any code
+1. Read .ai/ABIS_MEMORY.md and .ai/TASK_QUEUE.md.
+2. Work ONLY the highest-priority TODO task; mark it IN_PROGRESS first.
+3. Respect .ai/API_DOCUMENTATION.md and .ai/DATABASE_DESIGN.md as contracts.
+
+## While working
+- Backend: Django 5 + DRF, apps under backend/apps/, service-layer boundaries,
+  UUID PKs, deny-by-default permissions, AuditLog on person/biometric mutations.
+- Frontend: React 18 + TS + Vite, feature-sliced under frontend/src/features/,
+  TanStack Query for server state, Zustand for auth, Tailwind for styling.
+- Adapters for anything external (matching SDK, SMS, payments, Fayda/CRIMS,
+  devices). Dev uses mock/sandbox drivers selected by env vars.
+- Windows 11 host: PowerShell scripts, `venv\Scripts\activate`, celery --pool=solo.
+- Tests ship with the task: pytest for backend, Vitest for frontend. A task is
+  not DONE until its verification method in TASK_QUEUE.md passes.
+
+## After each task
+- Update .ai/TASK_QUEUE.md (status + one-line result).
+- Append .ai/sessions/YYYY-MM-DD-<topic>.md (what/why/next).
+- Record architectural choices as new ADRs in .ai/DECISIONS.md. Never reverse
+  an ADR silently.
+- Conventional commit message per task (feat/fix/test/docs/chore(scope): ...).
+
+## Never
+- Store secrets in code (use .env; keep .env.example current).
+- Put refresh tokens in localStorage.
+- Write raw SQL, bypass serializer validation, or skip AuditLog.
+- Delete or rewrite history in .ai/ files.
