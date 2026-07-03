@@ -42,7 +42,13 @@ Description: Dev scripts for Windows 11 — scripts/setup.ps1 (venv, pip install
   npm install, migrate, seed), scripts/dev.ps1 (start Postgres+Redis via docker
   compose, runserver, celery --pool=solo, vite), scripts/test.ps1 (pytest + vitest
   + pip-audit + npm audit). docker-compose.yml with postgres:16 and redis:7.
-Priority: High · Status: TODO
+Priority: High · Status: DONE — 2026-07-04: docker-compose (db on host 5433 —
+  ADR-011, redis 6379, healthchecks), scripts/common|setup|dev|test.ps1
+  (ASCII + UTF-8 BOM for PS 5.1). Verified: setup.ps1 idempotent end-to-end,
+  migrate applied to docker db, live runserver health+Swagger 200 (closes
+  T-001 deferred check), celery worker ready on redis, test.ps1 all 6 gates
+  PASS (incl. pip-audit after Pillow 11→12.3 vuln fix). README fresh-clone
+  quickstart documented.
 Verification method: fresh-clone dry run documented in README.
 
 Task ID: T-004

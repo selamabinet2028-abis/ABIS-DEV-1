@@ -97,8 +97,9 @@ TEMPLATES = [
 
 # ---------------------------------------------------------------- database
 DATABASES = {
+    # Default matches docker-compose.yml (host port 5433 — 5432 is often taken).
     "default": env.db_url(
-        "DATABASE_URL", default="postgres://abis:abis@localhost:5432/abis"
+        "DATABASE_URL", default="postgres://abis:abis@localhost:5433/abis"
     ),
 }
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

@@ -1,6 +1,6 @@
 # ABIS_MEMORY.md — Persistent Project Memory
 
-> Last updated: 2026-07-04 (T-001 backend + T-002 frontend scaffolds DONE)
+> Last updated: 2026-07-04 (T-001..T-003 DONE — scaffolds + dev tooling verified)
 
 ## 1. ABIS Identity
 
@@ -19,8 +19,9 @@
 
 ## 2. Current Development State
 
-**Status: SCAFFOLDING.** Backend skeleton exists and verifies green; frontend
-and services are next.
+**Status: FOUNDATION COMPLETE.** Backend + frontend scaffolds and the full
+Windows dev toolchain (docker services, setup/dev/test scripts) verify green.
+Feature modules begin at T-004.
 
 - **Completed:** Project proposal, `.ai/` knowledge base, architecture, database
   design, API contract, development plan, task queue. **T-001** backend scaffold
@@ -30,11 +31,13 @@ and services are next.
   scaffold (Vite 6 + React 18 TS strict, Tailwind v4 CSS-first — ADR-010,
   axios client w/ single-flight refresh, Zustand auth store, role-aware shell,
   login page, toast system; Vitest 10/10, typecheck/lint/build clean).
+  **T-003** dev tooling (docker-compose db@5433/redis@6379 — ADR-011,
+  setup/dev/test.ps1 — ADR-012, README quickstart; full 6-gate test.ps1 PASS,
+  live runserver + celery verified, Pillow CVE fix → 12.3).
 - **Partially completed:** T-002 live login round-trip — blocked on T-004 auth
   endpoints; re-verify after T-004.
-- **Unfinished:** T-003 onward in `TASK_QUEUE.md` — dev scripts/docker-compose
-  (note: host port 5432 occupied → publish Postgres on 5433), all feature
-  modules, tests, deployment.
+- **Unfinished:** T-004 onward in `TASK_QUEUE.md` — all feature modules,
+  tests, deployment.
 
 ## 3. Important Technologies (agreed stack)
 

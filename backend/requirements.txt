@@ -18,7 +18,7 @@ daphne>=4.1,<5.0
 psycopg[binary]>=3.2,<4.0
 
 # Imaging / biometrics pre-processing
-Pillow>=11.0,<12.0
+Pillow>=12.2,<13.0
 opencv-python-headless>=4.10,<5.0
 numpy>=1.26
 

@@ -50,4 +50,16 @@ Context: Stack doc pins React 18 + Vite + Tailwind but not majors/patterns.
 Chosen: Tailwind CSS **v4** (CSS-first via `@tailwindcss/vite`; there is NO tailwind.config.js — theme/customization live in `src/index.css`); React Router **v6** (`createBrowserRouter`); custom Zustand-based toast system (no third-party toast dep); MSW v2 for API mocking in Vitest.
 Future impact: agents must not add a v3-style tailwind.config.js; nav/role gating lives in `src/components/layout/nav.ts`; all new features follow the `src/features/<module>` slice pattern from ARCHITECTURE.md.
 
+## ADR-011
+Date: 2026-07-04 · Decision: Dev Postgres publishes on host port **5433** (container 5432)
+Context: The project workstation (and many dev machines) already runs a PostgreSQL on 5432; T-001 verification hit auth failures against the wrong server.
+Chosen: docker-compose maps 5433:5432; `DATABASE_URL` default and `.env.example` use 5433. Prod compose (T-021) keeps Postgres internal-only (no host port), so this is dev-only.
+Future impact: any tool connecting to dev Postgres must use 5433; never assume 5432 locally.
+
+## ADR-012
+Date: 2026-07-04 · Decision: PowerShell scripts are ASCII-only, saved UTF-8 **with BOM**, CRLF
+Context: `powershell.exe` 5.1 parses BOM-less UTF-8 .ps1 as ANSI; em-dashes in strings broke the parser outright.
+Chosen: scripts/*.ps1 use ASCII punctuation, UTF-8 BOM, `eol=crlf` via .gitattributes; shared helpers live in scripts/common.ps1 (dot-sourced).
+Future impact: keep non-ASCII out of .ps1 files; new scripts dot-source common.ps1 for service startup/health-wait helpers.
+
 (Agents: append new ADRs below; never edit past entries.)
