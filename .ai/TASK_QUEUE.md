@@ -71,7 +71,7 @@ Task ID: T-005
 Description: audit app — insert-only AuditLog model (REVOKE-style guard in
   save/delete), signal/middleware capturing mutations on tracked models,
   read-only query endpoint for auditor/admin with filters.
-Priority: High · Status: TODO
+Priority: High · Status: IN_PROGRESS
 Verification method: pytest — mutation writes log; update/delete on AuditLog raises.
 
 Task ID: T-006

@@ -72,6 +72,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "apps.audit.middleware.AuditContextMiddleware",  # after auth: needs request.user
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -166,6 +167,16 @@ SPECTACULAR_SETTINGS = {
 
 CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
 CORS_ALLOW_CREDENTIALS = True  # refresh cookie (ADR-006/ADR-013)
+
+# Insert-only audit trail (golden rule #4). Feature tasks append their
+# person/biometric models here as they land (T-006+).
+ABIS_AUDITED_MODELS = [
+    "accounts.User",
+    "accounts.Role",
+    "basedata.OrgUnit",
+]
+ABIS_AUDIT_MASK_FIELDS = {"password"}
+ABIS_AUDIT_IGNORE_FIELDS = {"last_login", "updated_at"}
 
 # Account lockout + refresh-cookie policy (ADR-013)
 ABIS_AUTH = {
