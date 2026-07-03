@@ -1,6 +1,6 @@
 # ABIS_MEMORY.md — Persistent Project Memory
 
-> Last updated: 2026-07-04 (T-001 backend scaffold DONE)
+> Last updated: 2026-07-04 (T-001 backend + T-002 frontend scaffolds DONE)
 
 ## 1. ABIS Identity
 
@@ -26,11 +26,15 @@ and services are next.
   design, API contract, development plan, task queue. **T-001** backend scaffold
   (Django 5.2.15 / Py 3.12 venv, 19 apps, settings split, Celery+Channels wired,
   health + schema + Swagger, custom `accounts.User` UUID pk — see ADR-009,
-  pytest smoke green, git repo initialized on `main`).
-- **Partially completed:** None.
-- **Unfinished:** T-002 onward in `TASK_QUEUE.md` — frontend scaffold, dev
-  scripts/docker-compose (note: host port 5432 occupied → use 5433), all
-  feature modules, tests, deployment.
+  pytest smoke green, git repo initialized on `main`). **T-002** frontend
+  scaffold (Vite 6 + React 18 TS strict, Tailwind v4 CSS-first — ADR-010,
+  axios client w/ single-flight refresh, Zustand auth store, role-aware shell,
+  login page, toast system; Vitest 10/10, typecheck/lint/build clean).
+- **Partially completed:** T-002 live login round-trip — blocked on T-004 auth
+  endpoints; re-verify after T-004.
+- **Unfinished:** T-003 onward in `TASK_QUEUE.md` — dev scripts/docker-compose
+  (note: host port 5432 occupied → publish Postgres on 5433), all feature
+  modules, tests, deployment.
 
 ## 3. Important Technologies (agreed stack)
 

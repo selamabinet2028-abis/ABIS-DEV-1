@@ -44,4 +44,10 @@ Context: Django cannot swap `AUTH_USER_MODEL` after initial migrations without r
 Chosen: T-001 ships a minimal `User(AbstractUser)` with UUID pk (per ADR-008) and its `0001_initial` migration; T-004 extends it with role FK, org_unit, badge_number, phone, lockout/password fields via normal follow-up migrations.
 Future impact: no migration re-baseline ever needed; all FKs to users are UUID from day one.
 
+## ADR-010
+Date: 2026-07-04 · Decision: Frontend scaffold library choices (T-002)
+Context: Stack doc pins React 18 + Vite + Tailwind but not majors/patterns.
+Chosen: Tailwind CSS **v4** (CSS-first via `@tailwindcss/vite`; there is NO tailwind.config.js — theme/customization live in `src/index.css`); React Router **v6** (`createBrowserRouter`); custom Zustand-based toast system (no third-party toast dep); MSW v2 for API mocking in Vitest.
+Future impact: agents must not add a v3-style tailwind.config.js; nav/role gating lives in `src/components/layout/nav.ts`; all new features follow the `src/features/<module>` slice pattern from ARCHITECTURE.md.
+
 (Agents: append new ADRs below; never edit past entries.)
