@@ -1,4 +1,5 @@
 """T-005: /audit-logs/ read-only endpoint — RBAC + filters."""
+
 from datetime import timedelta
 
 import pytest
@@ -22,7 +23,13 @@ def sample_rows(db):
 class TestAccess:
     @pytest.mark.parametrize(
         "role,expected",
-        [("admin", 200), ("auditor", 200), ("operator", 403), ("investigator", 403), ("supervisor", 403)],
+        [
+            ("admin", 200),
+            ("auditor", 200),
+            ("operator", 403),
+            ("investigator", 403),
+            ("supervisor", 403),
+        ],
     )
     def test_list_rbac(self, auth_client, role, expected):
         assert auth_client(role).get(URL).status_code == expected
@@ -56,7 +63,9 @@ class TestFilters:
     def test_filter_by_actor(self, auth_client, sample_rows):
         client = auth_client("admin")
         # mutate something over the API so an actor is attributed
-        client.patch(f"/api/v1/users/{client.user.id}/", {"phone": "0911"}, format="json")
+        client.patch(
+            f"/api/v1/users/{client.user.id}/", {"phone": "0911"}, format="json"
+        )
         resp = client.get(URL, {"actor": client.user.username})
         assert resp.status_code == 200
         rows = resp.json()["results"]

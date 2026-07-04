@@ -4,6 +4,7 @@ pre_save stashes the persisted field values; post_save writes a create row or
 an old→new diff; post_delete writes a snapshot. Sensitive fields are masked,
 noise-only updates (e.g. last_login) are skipped.
 """
+
 from __future__ import annotations
 
 import datetime
@@ -28,7 +29,9 @@ def _mask_fields() -> set[str]:
 
 
 def _ignore_fields() -> set[str]:
-    return set(getattr(settings, "ABIS_AUDIT_IGNORE_FIELDS", {"last_login", "updated_at"}))
+    return set(
+        getattr(settings, "ABIS_AUDIT_IGNORE_FIELDS", {"last_login", "updated_at"})
+    )
 
 
 def _json_safe(value: Any) -> Any:
@@ -67,7 +70,9 @@ def _on_post_save(sender, instance, created, raw=False, **kwargs):
     if raw:
         return
     if created:
-        audit_instance(AuditLog.Action.CREATE, instance, changes={"new": _field_values(instance)})
+        audit_instance(
+            AuditLog.Action.CREATE, instance, changes={"new": _field_values(instance)}
+        )
         return
 
     old_values = getattr(instance, _OLD_VALUES_ATTR, None)
@@ -85,7 +90,9 @@ def _on_post_save(sender, instance, created, raw=False, **kwargs):
 
 
 def _on_post_delete(sender, instance, **kwargs):
-    audit_instance(AuditLog.Action.DELETE, instance, changes={"old": _field_values(instance)})
+    audit_instance(
+        AuditLog.Action.DELETE, instance, changes={"old": _field_values(instance)}
+    )
 
 
 def connect_audited_models() -> list[str]:
@@ -96,6 +103,8 @@ def connect_audited_models() -> list[str]:
         uid = f"audit:{label}"
         pre_save.connect(_on_pre_save, sender=model, dispatch_uid=f"{uid}:pre_save")
         post_save.connect(_on_post_save, sender=model, dispatch_uid=f"{uid}:post_save")
-        post_delete.connect(_on_post_delete, sender=model, dispatch_uid=f"{uid}:post_delete")
+        post_delete.connect(
+            _on_post_delete, sender=model, dispatch_uid=f"{uid}:post_delete"
+        )
         connected.append(label)
     return connected

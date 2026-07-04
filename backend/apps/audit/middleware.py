@@ -1,11 +1,14 @@
 """Captures the current request in a contextvar so signal receivers can
 attribute mutations to an actor/ip/user-agent without threading a request
 object through every save()."""
+
 from contextvars import ContextVar
 
 from django.http import HttpRequest
 
-_current_request: ContextVar[HttpRequest | None] = ContextVar("audit_request", default=None)
+_current_request: ContextVar[HttpRequest | None] = ContextVar(
+    "audit_request", default=None
+)
 
 
 def get_current_request() -> HttpRequest | None:

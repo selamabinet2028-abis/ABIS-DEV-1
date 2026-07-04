@@ -71,7 +71,13 @@ Task ID: T-005
 Description: audit app — insert-only AuditLog model (REVOKE-style guard in
   save/delete), signal/middleware capturing mutations on tracked models,
   read-only query endpoint for auditor/admin with filters.
-Priority: High · Status: IN_PROGRESS
+Priority: High · Status: DONE — 2026-07-04: insert-only AuditLog (save/delete/
+  queryset guards raise AuditImmutabilityError), registry-driven signal
+  tracking via ABIS_AUDITED_MODELS + AuditContextMiddleware (actor/ip/UA),
+  masked password + ignored noise fields, /audit-logs/ read-only endpoint
+  (admin+auditor, entity/entity_id/actor/action/date filters). ADR-014.
+  pytest 90/90 green, coverage 98%, schema clean. Feature tasks MUST append
+  new sensitive models to ABIS_AUDITED_MODELS.
 Verification method: pytest — mutation writes log; update/delete on AuditLog raises.
 
 Task ID: T-006

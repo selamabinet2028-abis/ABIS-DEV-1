@@ -96,7 +96,13 @@ runs quality check, returns `{record_id, quality_score, accepted}` ·
 WebSocket `ws/alerts/` pushes new alerts to supervisors/investigators.
 
 ### audit
-`GET /audit-logs/?entity=&entity_id=&actor=&date_from=&date_to=` (auditor/admin only, read-only)
+`GET /audit-logs/?entity=&entity_id=&actor=&action=&date_from=&date_to=`
+(auditor/admin only, read-only; `?search=` over entity_repr/actor/entity_id;
+`entity` is `app_label.ModelName`, dates are ISO-8601). Rows are written
+automatically for every mutation of models in `ABIS_AUDITED_MODELS`
+(settings); sensitive fields masked (`***`), `last_login`/`updated_at`
+noise skipped. AuditLog itself is insert-only — update/delete raise
+(ADR-014).
 
 ### apimgmt
 `CRUD /external-systems/` · `POST /external-systems/{id}/test/` ·

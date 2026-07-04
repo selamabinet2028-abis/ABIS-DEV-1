@@ -64,7 +64,9 @@ class AuditLog(models.Model):
 
     def save(self, *args, **kwargs):
         if not self._state.adding:
-            raise AuditImmutabilityError("AuditLog is insert-only: rows cannot be modified.")
+            raise AuditImmutabilityError(
+                "AuditLog is insert-only: rows cannot be modified."
+            )
         return super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):

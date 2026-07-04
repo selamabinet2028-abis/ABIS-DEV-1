@@ -68,4 +68,10 @@ Context: API_DOCUMENTATION originally said login returns `{access, refresh, user
 Chosen: ADR-006 wins. Login → `{access, user}` + `abis_refresh` httpOnly cookie scoped to `/api/v1/auth/` (SameSite=Lax, Secure in prod); refresh rotates + blacklists (body `{refresh}` accepted as fallback for non-browser clients); logout 205. Lockout: 5 failures → 15 min lock (env-tunable), counter resets on lock/success. `DELETE /users/{id}` deactivates (is_active=False) + blacklists tokens — accounts are never hard-deleted (audit/chain-of-custody). Custom refresh view returns explicit 401 (DRF would map InvalidToken to 403 on authentication-free views).
 Future impact: any new client must use cookie-based refresh; T-020 IDOR/security tests assert these exact semantics.
 
+## ADR-014
+Date: 2026-07-04 · Decision: Audit trail design (T-005)
+Context: Golden rule #4 — audit every mutation of person/biometric data; DATABASE_DESIGN requires an INSERT-ONLY AuditLog.
+Chosen: (1) Immutability enforced at the application layer — model save()-on-existing/delete() and queryset update()/delete() raise `AuditImmutabilityError`; a DB-level REVOKE is deferred to prod hardening (T-021) since dev connects as the table owner. (2) Tracking is registry-driven: `ABIS_AUDITED_MODELS` in settings lists `app.Model` labels; audit.apps.ready() connects generic pre_save/post_save/post_delete receivers — feature tasks just append their labels. (3) Actor/ip/user-agent come from a contextvar filled by `AuditContextMiddleware` (after AuthenticationMiddleware). (4) `ABIS_AUDIT_MASK_FIELDS` values are recorded as `***` (password); `ABIS_AUDIT_IGNORE_FIELDS` (last_login, updated_at) never trigger update rows. (5) Search auditing exposed via `audit.services.log_search` — wired into person/biometric endpoints from T-006 on.
+Future impact: every new sensitive model MUST be added to ABIS_AUDITED_MODELS in the same task; T-020 adds tests asserting registry coverage; T-021 adds SQL REVOKE UPDATE/DELETE for defense in depth.
+
 (Agents: append new ADRs below; never edit past entries.)

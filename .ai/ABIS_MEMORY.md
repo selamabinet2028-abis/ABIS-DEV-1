@@ -1,6 +1,6 @@
 # ABIS_MEMORY.md — Persistent Project Memory
 
-> Last updated: 2026-07-04 (T-001..T-004 DONE — foundation + accounts/RBAC/auth)
+> Last updated: 2026-07-04 (T-001..T-005 DONE — foundation, accounts, audit)
 
 ## 1. ABIS Identity
 
@@ -40,9 +40,15 @@ Feature modules begin at T-004.
   63 tests, 98% cov; live login round-trip verified (also closes T-002 note).
   Shared abstract bases in `common/models.py` (UUIDModel/BaseModel) — use for
   every new model.
+  **T-005** audit: insert-only AuditLog (guards raise AuditImmutabilityError),
+  registry-driven tracking — **new sensitive models must be appended to
+  `ABIS_AUDITED_MODELS` in settings** (ADR-014); actor context via
+  AuditContextMiddleware; `/audit-logs/` admin+auditor read-only;
+  `audit.services.log_search` ready for person/biometric search endpoints.
+  Shared pytest fixtures live in `backend/conftest.py`.
 - **Partially completed:** None.
-- **Unfinished:** T-005 onward in `TASK_QUEUE.md` — audit, basedata,
-  enrollment, matching, remaining modules, T-018 frontend features, deployment.
+- **Unfinished:** T-006 onward in `TASK_QUEUE.md` — basedata, enrollment,
+  matching, remaining modules, T-018 frontend features, deployment.
 
 ## 3. Important Technologies (agreed stack)
 

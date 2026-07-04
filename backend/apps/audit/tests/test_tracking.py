@@ -1,4 +1,5 @@
 """T-005: mutations on tracked models write audit rows (signals + middleware)."""
+
 import pytest
 
 from apps.accounts.tests.factories import UserFactory
@@ -12,9 +13,13 @@ class TestMutationTracking:
     def test_create_writes_audit_row_with_masked_password(self):
         from apps.accounts.models import User
 
-        user = User.objects.create_user(username="tracked.user", password="Tr@cked!Pass42")
+        user = User.objects.create_user(
+            username="tracked.user", password="Tr@cked!Pass42"
+        )
         row = AuditLog.objects.get(
-            entity="accounts.User", entity_id=str(user.id), action=AuditLog.Action.CREATE
+            entity="accounts.User",
+            entity_id=str(user.id),
+            action=AuditLog.Action.CREATE,
         )
         assert row.changes["new"]["username"] == "tracked.user"
         assert row.changes["new"]["password"] == "***"  # hash never leaks into audit
@@ -25,7 +30,9 @@ class TestMutationTracking:
         user.save(update_fields=["password"])
         row = (
             AuditLog.objects.filter(
-                entity="accounts.User", entity_id=str(user.id), action=AuditLog.Action.UPDATE
+                entity="accounts.User",
+                entity_id=str(user.id),
+                action=AuditLog.Action.UPDATE,
             )
             .order_by("-at")
             .first()
@@ -47,7 +54,10 @@ class TestMutationTracking:
             .first()
         )
         assert row is not None
-        assert row.changes["name"] == {"old": "Forensics", "new": "Forensics Directorate"}
+        assert row.changes["name"] == {
+            "old": "Forensics",
+            "new": "Forensics Directorate",
+        }
         assert "updated_at" not in row.changes  # ignored noise field
 
     def test_delete_writes_snapshot(self):
@@ -75,8 +85,8 @@ class TestMutationTracking:
         assert AuditLog.objects.filter(entity="accounts.User").count() == before
 
     def test_untracked_model_writes_nothing(self):
-        from apps.accounts.services import log_activity
         from apps.accounts.models import UserActivityLog
+        from apps.accounts.services import log_activity
 
         user = UserFactory()
         before = AuditLog.objects.count()

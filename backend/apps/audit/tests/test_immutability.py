@@ -1,4 +1,5 @@
 """T-005: AuditLog is insert-only — update/delete raise at every level."""
+
 import pytest
 
 from apps.audit.models import AuditImmutabilityError, AuditLog
@@ -9,7 +10,9 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture
 def log() -> AuditLog:
-    return write_audit(AuditLog.Action.CREATE, entity="basedata.Person", entity_id="x-1")
+    return write_audit(
+        AuditLog.Action.CREATE, entity="basedata.Person", entity_id="x-1"
+    )
 
 
 def test_insert_is_allowed(log):

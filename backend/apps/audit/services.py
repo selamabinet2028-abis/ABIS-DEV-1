@@ -1,4 +1,5 @@
 """Audit write helpers. All AuditLog rows are created through here."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -16,7 +17,11 @@ def _request_meta() -> dict[str, Any]:
     user = getattr(request, "user", None)
     actor = user if (user is not None and user.is_authenticated) else None
     forwarded = request.META.get("HTTP_X_FORWARDED_FOR")
-    ip = forwarded.split(",")[0].strip() if forwarded else request.META.get("REMOTE_ADDR")
+    ip = (
+        forwarded.split(",")[0].strip()
+        if forwarded
+        else request.META.get("REMOTE_ADDR")
+    )
     return {
         "actor": actor,
         "actor_username": actor.username if actor else "",
@@ -43,7 +48,9 @@ def write_audit(
     )
 
 
-def audit_instance(action: str, instance: models.Model, changes: dict | None = None) -> AuditLog:
+def audit_instance(
+    action: str, instance: models.Model, changes: dict | None = None
+) -> AuditLog:
     return write_audit(
         action,
         entity=instance._meta.label,
