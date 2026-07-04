@@ -1,6 +1,6 @@
 # ABIS_MEMORY.md — Persistent Project Memory
 
-> Last updated: 2026-07-04 (T-001..T-013 DONE — through payments)
+> Last updated: 2026-07-05 (T-001..T-014 DONE — through certificates/verification)
 
 ## 1. ABIS Identity
 
@@ -81,9 +81,13 @@ Feature modules begin at T-004.
   **T-013** payments: PaymentProvider ABC + SandboxProvider, HMAC raw-body
   webhooks (per-provider secrets, replay-idempotent) → mark_paid, receipt
   sequence, reconciliation batches (ADR-022). 303 tests, 98%.
+  **T-014** clearance+verification: Certificate (random EFP- verification_no,
+  reportlab PDF + HMAC-signed QR covering the NAME — ADR-023), decision +
+  advance endpoints, public masked verify (no enumeration), QR verify,
+  X-API-Key institutional verify (minimal apimgmt.ApiCredential early),
+  VerificationEvent on every attempt. 329 tests, 98%.
 - **Partially completed:** None.
-- **Unfinished:** T-014 onward in `TASK_QUEUE.md` — clearance/verification
-  certificates (PDF+QR, public verify), notifications, reports,
+- **Unfinished:** T-015 onward in `TASK_QUEUE.md` — notifications, reports,
   apimgmt/devices/documents, T-018 frontend, seed, hardening, deployment,
   docs.
 

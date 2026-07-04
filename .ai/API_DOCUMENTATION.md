@@ -60,14 +60,28 @@ ADR-021; machine: draft→submitted→paid→biometrics_captured→in_review→
 approved|rejected, approved→certificate_issued) ·
 `POST /applications/{id}/document/` multipart (scanned ID; pdf/jpg/png) ·
 `POST /applications/{id}/submit/` (requires ID document) ·
-`POST /applications/{id}/decision/` (`{decision, note}`, T-014) ·
-`POST /applications/{id}/issue-certificate/` → PDF + QR (T-014) ·
-`GET /certificates/{id}/download/` (T-014).
+`POST /applications/{id}/decision/` `{decision: approved|rejected, note?}`
+(in_review only; supervisor/admin) ·
+`POST /applications/{id}/biometrics-captured/` + `/to-review/` (thin
+one-step advance endpoints over the ADR-021 machine) ·
+`POST /applications/{id}/issue-certificate/` (approved only; operator/
+supervisor/admin) → Certificate: CERT-YYYY-NNNNNN + random EFP-… 
+verification_no (non-enumerable), reportlab PDF w/ embedded QR, expiry
+`ABIS_CERT_VALIDITY_DAYS` (180) · `GET /certificates/` (search cert/verify/
+tracking no) · `GET /certificates/{id}/download/` (**audited** PDF).
 RBAC: operator/supervisor/admin.
 
-### verification (PUBLIC)
-`GET /public/verify/{verification_no}/` → `{valid, holder_name_masked, issued_at, expires_at, status}` ·
-`POST /public/verify/qr/` `{qr_payload}` · Institutional: `POST /verify/api/` (API key, full detail)
+### verification (PUBLIC, throttle scope `public`)
+`GET /public/verify/{verification_no}/` → `{valid, holder_name_masked,
+issued_at, expires_at, status}` — unknown numbers return
+`{valid:false, status:"invalid"}` (200, no enumeration hints); revoked/
+expired reported as such · `POST /public/verify/qr/` `{qr_payload}` —
+HMAC-signed payload (signature covers number+name+issue date, ADR-023);
+tampered → invalid, malformed → 400 · Institutional `POST /verify/api/`
+`{verification_no}` with `X-API-Key: <prefix>.<secret>` (hashed
+apimgmt.ApiCredential, throttle scope `apikey`) → full unmasked detail;
+bad/missing/inactive key → 401. Every attempt writes a VerificationEvent
+(channel portal|qr|api, result, ip, credential).
 
 ### appointments (public booking + staff admin)
 PUBLIC (AllowAny, throttle scope `public` 30/min):

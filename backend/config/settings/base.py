@@ -149,6 +149,7 @@ REST_FRAMEWORK = {
         "auth": "10/min",  # login attempts (ScopedRateThrottle on LoginView)
         "public": "30/min",  # anonymous portal endpoints (verify, booking)
         "webhook": "120/min",  # gateway callbacks (HMAC-authenticated)
+        "apikey": "300/min",  # institutional verify (X-API-Key)
     },
 }
 
@@ -205,8 +206,10 @@ ABIS_AUDITED_MODELS = [
     "appointments.Appointment",
     "payments.Payment",
     "payments.ReconciliationBatch",
+    "clearance.Certificate",
+    "apimgmt.ApiCredential",
 ]
-ABIS_AUDIT_MASK_FIELDS = {"password", "template_bytes"}
+ABIS_AUDIT_MASK_FIELDS = {"password", "template_bytes", "key_hash"}
 ABIS_AUDIT_IGNORE_FIELDS = {"last_login", "updated_at"}
 
 # Upload validation (security golden rule)
@@ -239,6 +242,10 @@ ABIS_PAYMENT_PROVIDERS = {
         "ABIS_PROVIDER_CHAPA", default="apps.payments.providers.sandbox.SandboxProvider"
     ),
 }
+# Certificates (T-014): validity window + QR payload HMAC secret
+ABIS_CERT_VALIDITY_DAYS = env.int("ABIS_CERT_VALIDITY_DAYS", default=180)
+ABIS_QR_SECRET = env("ABIS_QR_SECRET", default="dev-only-qr-secret-change-me")
+
 ABIS_PAYMENT_WEBHOOK_SECRETS = {
     "telebirr": env("ABIS_WEBHOOK_SECRET_TELEBIRR", default="sandbox-secret-telebirr"),
     "cbe_birr": env("ABIS_WEBHOOK_SECRET_CBE_BIRR", default="sandbox-secret-cbe-birr"),

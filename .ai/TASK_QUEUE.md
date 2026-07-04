@@ -199,6 +199,14 @@ Description: clearance + verification — approval decision endpoint; certificat
 Priority: High · Status: TODO
 Verification method: pytest — issued cert verifies valid; unknown number invalid;
   PDF and QR payload parse correctly.
+Status note: DONE — 2026-07-05: decision endpoint (in_review, sup/admin) +
+  one-step advance endpoints; Certificate (CERT- seq + random EFP-
+  verification_no, reportlab PDF w/ QR, 180d expiry, ADR-023), audited
+  download; public verify (masked, no-enumeration invalid), QR verify
+  (HMAC covers number+name+issued — name-tamper caught by tests),
+  institutional X-API-Key verify (minimal apimgmt.ApiCredential, hashed
+  keys); VerificationEvent on every attempt. pytest 329/329, cov 98%,
+  schema clean.
 
 Task ID: T-015
 Description: notifications — SmsMessage outbox, ConsoleSmsProvider (dev), status
