@@ -182,7 +182,14 @@ Task ID: T-013
 Description: payments — Payment model, provider driver interface with
   `SandboxProvider` (telebirr/cbe_birr/chapa stubs), initiate + HMAC-validated
   webhook + receipt number generation + reconciliation report.
-Priority: High · Status: TODO
+Priority: High · Status: DONE — 2026-07-04: Payment + ReconciliationBatch
+  models, PaymentProvider ABC + SandboxProvider (ADR-022), initiate (server-
+  side fee, submitted-only, idempotent pending, cash settles immediately),
+  HMAC webhook (raw-body SHA256, per-provider secrets, replay-idempotent,
+  amount-mismatch reject) flipping application→paid via mark_paid, receipt
+  RCP-YYYY-NNNNNN sequence, reconcile endpoint + persisted batches.
+  pytest 303/303 (webhook flips app to paid; bad/missing/cross-provider
+  signature 403), cov 98%, schema clean.
 Verification method: pytest — webhook flips application to paid; bad signature 403.
 
 Task ID: T-014

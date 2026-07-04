@@ -1,6 +1,6 @@
 # ABIS_MEMORY.md — Persistent Project Memory
 
-> Last updated: 2026-07-04 (T-001..T-012 DONE — through registration/appointments)
+> Last updated: 2026-07-04 (T-001..T-013 DONE — through payments)
 
 ## 1. ABIS Identity
 
@@ -78,9 +78,12 @@ Feature modules begin at T-004.
   mark_paid ready for T-013), ID doc upload + submit gate; TimeSlot capacity
   + race-safe public booking (select_for_update + conditional unique),
   public throttle scope. 282 tests, 98%.
+  **T-013** payments: PaymentProvider ABC + SandboxProvider, HMAC raw-body
+  webhooks (per-provider secrets, replay-idempotent) → mark_paid, receipt
+  sequence, reconciliation batches (ADR-022). 303 tests, 98%.
 - **Partially completed:** None.
-- **Unfinished:** T-013 onward in `TASK_QUEUE.md` — payments (webhook →
-  mark_paid), clearance/verification certificates, notifications, reports,
+- **Unfinished:** T-014 onward in `TASK_QUEUE.md` — clearance/verification
+  certificates (PDF+QR, public verify), notifications, reports,
   apimgmt/devices/documents, T-018 frontend, seed, hardening, deployment,
   docs.
 

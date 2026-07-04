@@ -82,9 +82,20 @@ Staff: `GET|PATCH /appointments/` (status transitions; creation is public),
 `CRUD /stations/` + `CRUD /time-slots/` (admin write; slot windows validated).
 
 ### payments
-`POST /payments/initiate/` `{application_id, method}` → `{payment_id, checkout_ref}` ·
-`POST /payments/webhook/{provider}/` (sandbox simulator in dev) ·
-`GET /payments/?status=` · `POST /payments/reconcile/`
+`POST /payments/initiate/` `{application_id, method: telebirr|cbe_birr|chapa|cash}`
+→ `{payment_id, checkout_ref, status, amount, receipt_no}` — amount is
+server-side (`ABIS_CLEARANCE_FEE_ETB`); requires application status
+`submitted`; repeat initiate returns the existing pending payment (200);
+**cash settles immediately** (receipt + application→paid) ·
+`POST /payments/webhook/{provider}/` — HMAC-SHA256 of the raw body in
+`X-ABIS-Signature`, per-provider secrets (`ABIS_WEBHOOK_SECRET_*`); bad/missing
+signature → **403**; unknown ref/provider → 404; amount mismatch → 400;
+paid → receipt `RCP-YYYY-NNNNNN` + application submitted→paid; replays
+idempotent; throttle scope `webhook` ·
+`GET /payments/?status=&method=` (search receipt/gateway/tracking) ·
+`POST /payments/reconcile/` `{date_from?, date_to?}` → persisted
+ReconciliationBatch (totals by method/status, paid sum, mismatches) ·
+`GET /payments/reconciliations/`. RBAC: operator/supervisor/admin.
 
 ### enrollment
 `POST /enrollments/` `{person, station?}` (operator auto-set) ·

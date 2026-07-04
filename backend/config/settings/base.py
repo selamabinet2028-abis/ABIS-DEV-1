@@ -148,6 +148,7 @@ REST_FRAMEWORK = {
         "user": "600/min",
         "auth": "10/min",  # login attempts (ScopedRateThrottle on LoginView)
         "public": "30/min",  # anonymous portal endpoints (verify, booking)
+        "webhook": "120/min",  # gateway callbacks (HMAC-authenticated)
     },
 }
 
@@ -202,6 +203,8 @@ ABIS_AUDITED_MODELS = [
     "registration.ClearanceApplication",
     "appointments.TimeSlot",
     "appointments.Appointment",
+    "payments.Payment",
+    "payments.ReconciliationBatch",
 ]
 ABIS_AUDIT_MASK_FIELDS = {"password", "template_bytes"}
 ABIS_AUDIT_IGNORE_FIELDS = {"last_login", "updated_at"}
@@ -220,6 +223,27 @@ ABIS_QUALITY_THRESHOLD = env.int("ABIS_QUALITY_THRESHOLD", default=2)
 MATCHING_ENGINE = env(
     "MATCHING_ENGINE", default="apps.matching.engines.mock.MockEngine"
 )
+
+# Payments (golden rule: adapters + sandbox drivers, toggled by env)
+ABIS_CLEARANCE_FEE_ETB = env("ABIS_CLEARANCE_FEE_ETB", default="300.00")
+ABIS_PAYMENT_PROVIDERS = {
+    "telebirr": env(
+        "ABIS_PROVIDER_TELEBIRR",
+        default="apps.payments.providers.sandbox.SandboxProvider",
+    ),
+    "cbe_birr": env(
+        "ABIS_PROVIDER_CBE_BIRR",
+        default="apps.payments.providers.sandbox.SandboxProvider",
+    ),
+    "chapa": env(
+        "ABIS_PROVIDER_CHAPA", default="apps.payments.providers.sandbox.SandboxProvider"
+    ),
+}
+ABIS_PAYMENT_WEBHOOK_SECRETS = {
+    "telebirr": env("ABIS_WEBHOOK_SECRET_TELEBIRR", default="sandbox-secret-telebirr"),
+    "cbe_birr": env("ABIS_WEBHOOK_SECRET_CBE_BIRR", default="sandbox-secret-cbe-birr"),
+    "chapa": env("ABIS_WEBHOOK_SECRET_CHAPA", default="sandbox-secret-chapa"),
+}
 ABIS_MATCH_THRESHOLD = env.float("ABIS_MATCH_THRESHOLD", default=80.0)
 ABIS_MATCH_TOP_K = env.int("ABIS_MATCH_TOP_K", default=20)
 

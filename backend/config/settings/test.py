@@ -25,6 +25,7 @@ REST_FRAMEWORK = {
         "user": "10000/min",
         "auth": "10000/min",
         "public": "10000/min",
+        "webhook": "10000/min",
     },
 }
 
