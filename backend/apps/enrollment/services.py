@@ -68,5 +68,7 @@ def complete_enrollment(enrollment: Enrollment) -> dict:
 
 
 def trigger_dedup(enrollment: Enrollment) -> str | None:
-    """Stub until T-008: returns a MatchJob id once the matching app exists."""
-    return None
+    """Launch the DEDUP MatchJob via the matching app's documented service."""
+    from apps.matching.services import start_dedup_job
+
+    return str(start_dedup_job(enrollment).id)

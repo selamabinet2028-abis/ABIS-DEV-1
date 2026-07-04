@@ -112,7 +112,14 @@ Description: matching app — MatchingEngine base interface, deterministic
   MockEngine (feature hash similarity), MatchJob + MatchCandidate models,
   Celery tasks for TP-TP/TP-LT/LT-TP/LT-LT/FACE-1N/DEDUP, identify/verify/job
   endpoints, candidate decision endpoint; wire dedup into enrollment complete.
-Priority: High · Status: TODO
+Priority: High · Status: DONE — 2026-07-04: MatchingEngine ABC + get_engine()
+  via MATCHING_ENGINE setting, MockEngine (GRID16 mean-abs-diff similarity),
+  MatchJob (+probe_enrollment for DEDUP — ADR-017) + MatchCandidate,
+  run_match_job Celery task (on_commit dispatch), identify 202/verify sync/
+  jobs read/decision endpoints, dedup wired into enrollment complete.
+  pytest 174/174 (dedup flags duplicate @100 rank 1; ranked identify; 9
+  engine contract tests), cov 98%, schema clean. LT-* galleries + probe_latent
+  deferred to T-009; ws/jobs push deferred to T-011/T-018 (poll works).
 Verification method: pytest (eager Celery) — dedup flags duplicate person;
   identify returns ranked candidates; engine contract tests pass on MockEngine.
 

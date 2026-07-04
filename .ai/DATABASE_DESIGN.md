@@ -74,8 +74,9 @@ erDiagram
 
 ### matching / pis / investigation
 - **MatchJob** (`job_type` in {TP-TP, TP-LT, LT-TP, LT-LT, FACE-1N, VERIFY-1_1, DEDUP},
-  `probe_record FK` or `probe_latent FK`, `status` in {queued, running, done, failed},
-  `threshold`, `requested_by FK`, timings)
+  probe: `probe_record FK` (TP-*/FACE) or `probe_latent FK` (LT-*, T-009) or
+  `probe_enrollment FK` (DEDUP multi-record probe — ADR-017), `status` in
+  {queued, running, done, failed}, `threshold`, `requested_by FK`, timings)
 - **MatchCandidate** (`job FK`, `person FK`, `record FK`, `score`, `rank`, `decision`
   in {undecided, hit, no_hit}, `verified_by FK`)
 - **Case** (`case_no`, `category FK`, `status`, `lead_investigator FK`)

@@ -93,13 +93,22 @@ class TestTenPrintFlow:
             assert stored != plaintext  # encrypted at rest
             assert decrypt_bytes(stored) == plaintext
 
-        # Complete the session (dedup stub until T-008).
+        # Complete the session — launches the DEDUP MatchJob (T-008, eager).
         resp = client.post(f"{ENROLLMENTS}{enrollment.id}/complete/")
         assert resp.status_code == 200
-        assert resp.json() == {"status": "completed", "dedup_job_id": None}
+        body = resp.json()
+        assert body["status"] == "completed"
+        assert body["dedup_job_id"] is not None
         enrollment.refresh_from_db()
         assert enrollment.status == Enrollment.Status.COMPLETED
         assert enrollment.completed_at is not None
+
+        from apps.matching.models import MatchJob
+
+        job = MatchJob.objects.get(id=body["dedup_job_id"])
+        assert job.job_type == MatchJob.JobType.DEDUP
+        assert job.status == MatchJob.Status.DONE
+        assert job.candidates.count() == 0  # first enrollment of this person
 
     def test_low_quality_rejected_without_template(self, auth_client):
         client = auth_client("operator")

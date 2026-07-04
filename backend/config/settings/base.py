@@ -182,6 +182,8 @@ ABIS_AUDITED_MODELS = [
     "enrollment.Enrollment",
     "enrollment.BiometricRecord",
     "enrollment.BiometricTemplate",
+    "matching.MatchJob",
+    "matching.MatchCandidate",
 ]
 ABIS_AUDIT_MASK_FIELDS = {"password", "template_bytes"}
 ABIS_AUDIT_IGNORE_FIELDS = {"last_login", "updated_at"}
@@ -195,6 +197,13 @@ ABIS_FIELD_KEY = env(
     default="neP8RPJf4BdE388S-9W5FDvEw0bA6fGfS6nkjG0atJY=",  # dev-only key
 )
 ABIS_QUALITY_THRESHOLD = env.int("ABIS_QUALITY_THRESHOLD", default=2)
+
+# Matching engine adapter (ADR-004): swap for the vendor SDK engine in prod.
+MATCHING_ENGINE = env(
+    "MATCHING_ENGINE", default="apps.matching.engines.mock.MockEngine"
+)
+ABIS_MATCH_THRESHOLD = env.float("ABIS_MATCH_THRESHOLD", default=80.0)
+ABIS_MATCH_TOP_K = env.int("ABIS_MATCH_TOP_K", default=20)
 
 # Account lockout + refresh-cookie policy (ADR-013)
 ABIS_AUTH = {

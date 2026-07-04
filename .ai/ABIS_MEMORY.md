@@ -1,6 +1,6 @@
 # ABIS_MEMORY.md — Persistent Project Memory
 
-> Last updated: 2026-07-04 (T-001..T-007 DONE — through enrollment/preprocessing)
+> Last updated: 2026-07-04 (T-001..T-008 DONE — through matching engine/jobs)
 
 ## 1. ABIS Identity
 
@@ -55,9 +55,16 @@ Feature modules begin at T-004.
   threshold rejection, NIST-ish metadata + sha256, audited image download,
   dedup stub at `enrollment.services.trigger_dedup` (T-008 replaces);
   minimal appointments.Station created early. 143 tests, 98%.
+  **T-008** matching: MatchingEngine ABC + MockEngine (GRID16, threshold 80),
+  MatchJob/MatchCandidate (+probe_enrollment for DEDUP — ADR-017), Celery
+  run_match_job, identify/verify/jobs/decision endpoints, dedup wired into
+  enrollment complete (duplicate person flagged @100). Engine contract tests
+  gate future SDK engines. 174 tests, 98%. LT-* searches + probe_latent →
+  T-009; ws job push → T-011/T-018.
 - **Partially completed:** None.
-- **Unfinished:** T-008 onward in `TASK_QUEUE.md` — matching engine + jobs,
-  investigation, remaining modules, T-018 frontend features, deployment.
+- **Unfinished:** T-009 onward in `TASK_QUEUE.md` — investigation, pis,
+  watchlist, registration→certificates chain, reports, T-018 frontend,
+  deployment.
 
 ## 3. Important Technologies (agreed stack)
 

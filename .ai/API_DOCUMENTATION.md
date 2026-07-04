@@ -86,10 +86,17 @@ T-008; requires ≥1 accepted record) · `GET /biometric-records/{id}/image/`
 quality_summary. RBAC: read op/inv/sup/admin, write op/admin.
 
 ### matching
-`POST /match/identify/` `{probe: record_id|latent_id, job_type, threshold}` → 202 job ·
-`POST /match/verify/` `{person_id, record_id}` → sync `{match: bool, score}` ·
-`GET /match/jobs/{id}/` → status + candidates ·
+`POST /match/identify/` `{probe: record_id, job_type: TP-TP|TP-LT|FACE-1N,
+threshold?}` → 202 `{job_id}` (LT-* probes arrive with T-009; DEDUP is
+launched by enrollment completion only) ·
+`POST /match/verify/` `{person_id, record_id}` → sync `{match, score, job_id}`
+(a done VERIFY-1_1 job row is kept for the audit trail) ·
+`GET /match/jobs/` `?status=&job_type=` · `GET /match/jobs/{id}/` → status +
+ranked candidates (person-aggregated for DEDUP) ·
 `POST /match/candidates/{id}/decision/` `{decision: hit|no_hit}`
+(investigator/admin). RBAC: run/read = investigator/supervisor/admin.
+Defaults: threshold 80, top-k 20 (`ABIS_MATCH_*` env); engine selected via
+`MATCHING_ENGINE` setting (MockEngine in dev, ADR-004/017).
 
 ### pis
 `POST /pis/search/` multipart face image → 202 FACE-1N job ·
