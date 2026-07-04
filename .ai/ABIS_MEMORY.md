@@ -1,6 +1,6 @@
 # ABIS_MEMORY.md — Persistent Project Memory
 
-> Last updated: 2026-07-04 (T-001..T-010 DONE — through PIS face search)
+> Last updated: 2026-07-04 (T-001..T-011 DONE — through watchlist/realtime alerts)
 
 ## 1. ABIS Identity
 
@@ -69,10 +69,15 @@ Feature modules begin at T-004.
   **T-010** pis: PhotoProbe + MatchJob.probe_photo (ADR-019), photo-probe
   FACE-1N w/ sync decode validation, candidate review + audited probe image;
   face search from seeded faces green. 218 tests, 98%.
+  **T-011** watchlist: match_job_completed signal → alerts (candidates on
+  active lists, incl. dedup re-enrollment) + Channels push; JWT ws auth
+  (?token=) + AlertConsumer role gate (ADR-020); communicator tests green.
+  242 tests, 98%.
 - **Partially completed:** None.
-- **Unfinished:** T-011 onward in `TASK_QUEUE.md` — watchlist + Channels
-  alerts, registration→certificates chain, reports, T-018 frontend,
-  deployment.
+- **Unfinished:** T-012 onward in `TASK_QUEUE.md` — registration→
+  certificates chain (first PUBLIC endpoints), payments, notifications,
+  reports, apimgmt/devices/documents, T-018 frontend, seed, hardening,
+  deployment, docs.
 
 ## 3. Important Technologies (agreed stack)
 

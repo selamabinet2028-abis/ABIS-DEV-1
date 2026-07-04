@@ -104,4 +104,10 @@ Context: PIS searches start from an uploaded photo, not an enrolled record; the 
 Chosen: pis owns `PhotoProbe` (image, sha256, uploaded_by; audited); MatchJob gains a fourth nullable probe FK `probe_photo`. FACE-1N resolves its probe as photo-first, record-fallback; photo probes are extracted transiently at run time (like latents), never stored as templates. Upload is validated synchronously (extension/size + engine.extract decode check) so nothing persists on a bad upload. Candidate review reuses matching candidates + decision endpoint.
 Future impact: T-019 seed uses PhotoProbe-free galleries (enrolled faces only); prod media hardening (T-021) must cover pis/probes/ paths.
 
+## ADR-020
+Date: 2026-07-04 · Decision: Watchlist alerting + WebSocket auth (T-011)
+Context: Alerts must fire on job completion without matching importing watchlist; the SPA holds JWTs in memory, so ws needs its own auth path.
+Chosen: (1) matching emits `match_job_completed` (django Signal, sent from execute_job after DONE); watchlist attaches in AppConfig.ready — dependency stays watchlist→matching. (2) Alerts fire per (active entry, job) for CANDIDATES (machine matches), not human hit-decisions — realtime warning is the point; dedup jobs alert too (watchlisted person re-enrolling under a new identity). Unique (entry, trigger_job) makes re-processing idempotent. (3) ws auth: `accounts.ws_auth.JWTAuthMiddleware` reads `?token=<access>`, loads user+role (role force-loaded so consumers never hit the DB); AlertConsumer gates on role in {admin, investigator, supervisor}, closes 4403 otherwise; group name "alerts". (4) Watchlists/entries deactivate, never hard-delete. (5) Consumer tests use URLRouter directly with scope-injected users + async_to_sync (no pytest-asyncio dependency, no threadpool DB visibility issues).
+Future impact: T-018 frontend connects with the in-memory access token; alert fan-out per org-unit/severity can extend the group scheme later.
+
 (Agents: append new ADRs below; never edit past entries.)

@@ -1,7 +1,13 @@
 """WebSocket URL routing.
 
-Consumers register here as they land: `ws/alerts/` (T-011 watchlist),
-`ws/jobs/{id}/` (T-008 matching).
+`ws/alerts/` — watchlist alerts (T-011). `ws/jobs/{id}/` may land with T-018
+if polling proves insufficient.
 """
 
-websocket_urlpatterns: list = []
+from django.urls import path
+
+from apps.watchlist.consumers import AlertConsumer
+
+websocket_urlpatterns = [
+    path("ws/alerts/", AlertConsumer.as_asgi()),
+]

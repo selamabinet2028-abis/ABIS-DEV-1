@@ -225,6 +225,10 @@ def execute_job(job: MatchJob) -> None:
     job.finished_at = timezone.now()
     job.save(update_fields=["status", "finished_at"])
 
+    from .signals import match_job_completed
+
+    match_job_completed.send(sender=MatchJob, job=job)
+
 
 def _run_identify(engine, job: MatchJob) -> list[tuple[BiometricRecord, float]]:
     exclude_record_ids: tuple = ()

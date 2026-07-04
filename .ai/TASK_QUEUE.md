@@ -155,7 +155,13 @@ Task ID: T-011
 Description: watchlist app — Watchlist/Entry/Alert models + CRUD; hook: any DONE
   match job with a hit against watchlisted person creates WatchlistAlert and
   pushes over Channels `ws/alerts/`; acknowledge endpoint.
-Priority: Medium · Status: TODO
+Priority: Medium · Status: DONE — 2026-07-04: Watchlist/Entry/Alert models
+  (unique person-per-list, unique entry-per-job alerts), CRUD w/ nested
+  entries + deactivate semantics, idempotent ack; match_job_completed signal
+  from matching → alert creation + Channels push (ADR-020); JWT ws auth
+  middleware (?token=) + AlertConsumer role gate; alerts fire on identify AND
+  dedup (watchlisted re-enrollment). pytest 242/242 incl. 4 communicator
+  tests + group-push assertion, cov 98%, schema clean.
 Verification method: pytest incl. Channels communicator test.
 
 Task ID: T-012

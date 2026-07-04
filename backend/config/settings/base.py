@@ -195,6 +195,9 @@ ABIS_AUDITED_MODELS = [
     "investigation.LatentPrint",
     "investigation.EvidenceDocument",
     "pis.PhotoProbe",
+    "watchlist.Watchlist",
+    "watchlist.WatchlistEntry",
+    "watchlist.WatchlistAlert",
 ]
 ABIS_AUDIT_MASK_FIELDS = {"password", "template_bytes"}
 ABIS_AUDIT_IGNORE_FIELDS = {"last_login", "updated_at"}

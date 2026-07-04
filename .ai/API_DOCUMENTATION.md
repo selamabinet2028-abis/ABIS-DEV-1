@@ -127,9 +127,16 @@ inv/sup/admin, write inv/admin. Latent-file hits appear as candidates with
 searches the latent gallery.
 
 ### watchlist
-`CRUD /watchlists/` · `CRUD /watchlists/{id}/entries/` ·
-`GET /watchlist-alerts/?acknowledged=false` · `POST /watchlist-alerts/{id}/ack/` ·
-WebSocket `ws/alerts/` pushes new alerts to supervisors/investigators.
+`CRUD /watchlists/` (DELETE → 405, deactivate via PATCH is_active) ·
+`GET|POST /watchlists/{id}/entries/` (unique person per list) ·
+`PATCH|DELETE /watchlists/{id}/entries/{entry_id}/` (DELETE deactivates) ·
+`GET /watchlist-alerts/?acknowledged=false&entry__watchlist=&entry__severity=` ·
+`POST /watchlist-alerts/{id}/ack/` (idempotent). Alerts fire automatically
+when a DONE match job (identify/dedup/…) has a candidate on an active list —
+one alert per (entry, job), score = best candidate score. WebSocket
+`ws/alerts/?token=<access>` (JWT query-param auth — accounts.ws_auth) pushes
+new alerts to admin/investigator/supervisor; others rejected (4403).
+RBAC: inv/sup/admin.
 
 ### audit
 `GET /audit-logs/?entity=&entity_id=&actor=&action=&date_from=&date_to=`
