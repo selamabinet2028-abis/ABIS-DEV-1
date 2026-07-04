@@ -173,6 +173,9 @@ SPECTACULAR_SETTINGS = {
         "LatentModalityEnum": "apps.investigation.models.LATENT_MODALITY_CHOICES",
         "MatchJobTypeEnum": "apps.matching.models.MATCH_JOB_TYPE_CHOICES",
         "LatentSearchJobTypeEnum": "apps.investigation.serializers.LATENT_SEARCH_JOB_TYPES",
+        # MatchJob.Status and ReportRun.Status share the same value set —
+        # one shared component name covers both.
+        "AsyncJobStatusEnum": "apps.matching.models.MATCH_JOB_STATUS_CHOICES",
     },
 }
 
@@ -209,6 +212,8 @@ ABIS_AUDITED_MODELS = [
     "clearance.Certificate",
     "apimgmt.ApiCredential",
     "notifications.SmsTemplate",
+    "reports.ReportDefinition",
+    "reports.ReportRun",
 ]
 ABIS_AUDIT_MASK_FIELDS = {"password", "template_bytes", "key_hash"}
 ABIS_AUDIT_IGNORE_FIELDS = {"last_login", "updated_at"}

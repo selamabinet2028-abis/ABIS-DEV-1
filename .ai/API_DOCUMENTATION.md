@@ -210,10 +210,17 @@ adapter (ConsoleSmsProvider in dev, ADR-024).
 `POST /documents/nist/import/`
 
 ### reports
-`GET /reports/definitions/` · `POST /reports/run/` `{definition_id, params, format}` → 202 ·
-`GET /reports/runs/{id}/download/` ·
-`GET /dashboard/kpis/` → enrollments today/week, pending applications, running
-match jobs, hit rate, certificates issued, alerts open (role-scoped)
+`GET /reports/definitions/` (5 seeded: enrollment_stats,
+verification_outcomes, case_activity, duplicates, clearance_issuance —
+builders registry, not user SQL) · `POST /reports/run/`
+`{definition_id, format: pdf|xlsx|csv, params?: {date_from, date_to}}` →
+202 run (Celery) · `GET /reports/runs/` `?status=&definition=` ·
+`GET /reports/runs/{id}/download/` (**audited as EXPORT**; 400 until done) ·
+`GET /dashboard/kpis/` → role-scoped blocks (ADR-025): admin/supervisor all
+{enrollments, applications, matching, certificates, alerts, audit,
+verification}; operator {enrollments, applications, certificates};
+investigator {enrollments, matching, alerts}; auditor {audit, verification}.
+RBAC reports: supervisor/auditor/admin; KPIs: any staff role.
 
 ## Error handling
 

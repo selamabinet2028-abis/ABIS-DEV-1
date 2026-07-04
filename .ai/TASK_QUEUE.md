@@ -224,7 +224,12 @@ Task ID: T-016
 Description: reports + dashboard — ReportDefinition/ReportRun, Celery export to
   PDF/XLSX/CSV, KPI endpoint (role-scoped), seed standard reports (enrollment
   stats, verification outcomes, case activity, duplicates, clearance issuance).
-Priority: Medium · Status: TODO
+Priority: Medium · Status: DONE — 2026-07-05: ReportDefinition (5 seeded,
+  builder registry — no user SQL, ADR-025) + ReportRun (Celery, csv/xlsx/pdf
+  renderers, audited EXPORT download), role-scoped KPI blocks endpoint.
+  pytest 363/363 (KPI shape per all 5 roles; XLSX opened via openpyxl w/
+  header+rows; all 5 definitions run clean; duplicates report lists dedup
+  hits), cov 98%, schema clean (shared AsyncJobStatusEnum override).
 Verification method: pytest — KPI shape per role; XLSX opens via openpyxl.
 
 Task ID: T-017

@@ -1,6 +1,6 @@
 # ABIS_MEMORY.md — Persistent Project Memory
 
-> Last updated: 2026-07-05 (T-001..T-015 DONE — through SMS notifications)
+> Last updated: 2026-07-05 (T-001..T-016 DONE — through reports/dashboard)
 
 ## 1. ABIS Identity
 
@@ -90,10 +90,13 @@ Feature modules begin at T-004.
   seeded templates, application_status_changed signal from
   registration.transition → submitted/paid/ready SMS;
   ClearanceApplication.contact_phone added (ADR-024). 342 tests, 98%.
+  **T-016** reports+dashboard: 5 seeded definitions via builders registry
+  (no user SQL), Celery csv/xlsx/pdf renders, audited EXPORT downloads,
+  role-scoped KPI blocks (ADR-025). 363 tests, 98%.
 - **Partially completed:** None.
-- **Unfinished:** T-016 onward in `TASK_QUEUE.md` — reports/dashboard,
-  apimgmt/devices/documents, T-018 frontend, seed, hardening, deployment,
-  docs.
+- **Unfinished:** T-017 onward in `TASK_QUEUE.md` — apimgmt/devices/
+  documents, T-018 frontend features, T-019 seed_demo, T-020 hardening,
+  T-021 deployment, T-022 docs.
 
 ## 3. Important Technologies (agreed stack)
 

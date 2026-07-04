@@ -145,5 +145,6 @@ class MatchCandidate(BaseModel):
         return f"#{self.rank} {target} @ {self.score} ({self.decision})"
 
 
-# Module-level alias for spectacular ENUM_NAME_OVERRIDES (nested paths fail).
+# Module-level aliases for spectacular ENUM_NAME_OVERRIDES (nested paths fail).
 MATCH_JOB_TYPE_CHOICES = MatchJob.JobType.choices
+MATCH_JOB_STATUS_CHOICES = MatchJob.Status.choices
