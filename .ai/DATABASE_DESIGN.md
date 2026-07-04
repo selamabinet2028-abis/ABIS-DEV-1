@@ -57,8 +57,9 @@ erDiagram
 
 ### registration / clearance / appointments / payments
 - **ClearanceApplication** (`tracking_no` unique e.g. `PCC-2026-000001`, `person FK`,
-  `purpose`, `status` in {draft, submitted, paid, biometrics_captured, in_review,
-  approved, rejected, certificate_issued}, scanned ID document path)
+  `purpose`, `contact_phone` (SMS notifications — ADR-024), `status` in {draft,
+  submitted, paid, biometrics_captured, in_review, approved, rejected,
+  certificate_issued}, scanned ID document path)
 - **Certificate** (`certificate_no`, `verification_no` unique, `qr_payload`,
   signed PDF path, `issued_by FK`, `expires_at`, `status`)
 - **Appointment** (`location FK Station`, `date`, `slot`, `status`) · **Station** + **TimeSlot**

@@ -38,6 +38,7 @@ class ClearanceApplication(BaseModel):
     status = models.CharField(
         max_length=24, choices=Status.choices, default=Status.DRAFT
     )
+    contact_phone = models.CharField(max_length=32, blank=True)  # SMS notifications
     id_document = models.FileField(upload_to=id_document_path, null=True, blank=True)
     submitted_at = models.DateTimeField(null=True, blank=True)
     decision_note = models.CharField(max_length=500, blank=True)

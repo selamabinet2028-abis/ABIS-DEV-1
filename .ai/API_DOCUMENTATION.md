@@ -191,7 +191,14 @@ noise skipped. AuditLog itself is insert-only — update/delete raise
 `CRUD /api-credentials/` · `GET /integration-logs/`
 
 ### notifications
-`GET /sms/outbox/` · `POST /sms/send-test/` · templates CRUD (admin)
+`GET /sms/outbox/` `?status=&template=` (admin/supervisor read) ·
+`POST /sms/send-test/` `{to, body}` (admin) · `CRUD /sms/templates/`
+(admin write; seeded: application_submitted, payment_received,
+certificate_ready — {placeholder} substitution). Status triggers fire
+automatically via the `application_status_changed` signal on
+submitted/paid/certificate_issued when the application has a
+`contact_phone`; dispatch is async Celery through the `ABIS_SMS_PROVIDER`
+adapter (ConsoleSmsProvider in dev, ADR-024).
 
 ### devices
 `CRUD /devices/` · `POST /devices/{id}/capture/` (simulator returns sample image in dev) ·

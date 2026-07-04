@@ -1,6 +1,6 @@
 # ABIS_MEMORY.md — Persistent Project Memory
 
-> Last updated: 2026-07-05 (T-001..T-014 DONE — through certificates/verification)
+> Last updated: 2026-07-05 (T-001..T-015 DONE — through SMS notifications)
 
 ## 1. ABIS Identity
 
@@ -86,8 +86,12 @@ Feature modules begin at T-004.
   advance endpoints, public masked verify (no enumeration), QR verify,
   X-API-Key institutional verify (minimal apimgmt.ApiCredential early),
   VerificationEvent on every attempt. 329 tests, 98%.
+  **T-015** notifications: SmsProvider adapter (console dev), outbox +
+  seeded templates, application_status_changed signal from
+  registration.transition → submitted/paid/ready SMS;
+  ClearanceApplication.contact_phone added (ADR-024). 342 tests, 98%.
 - **Partially completed:** None.
-- **Unfinished:** T-015 onward in `TASK_QUEUE.md` — notifications, reports,
+- **Unfinished:** T-016 onward in `TASK_QUEUE.md` — reports/dashboard,
   apimgmt/devices/documents, T-018 frontend, seed, hardening, deployment,
   docs.
 

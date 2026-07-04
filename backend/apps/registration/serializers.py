@@ -28,6 +28,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
             "person_no",
             "person_name",
             "purpose",
+            "contact_phone",
             "status",
             "has_id_document",
             "submitted_at",

@@ -39,6 +39,7 @@ def transition(
         raise ValidationError(
             f"Illegal status transition {application.status} → {new_status}."
         )
+    old_status = application.status
     application.status = new_status
     update_fields = ["status"]
     if new_status == Status.SUBMITTED:
@@ -48,6 +49,15 @@ def transition(
         application.decision_note = note
         update_fields.append("decision_note")
     application.save(update_fields=update_fields)
+
+    from .signals import application_status_changed
+
+    application_status_changed.send(
+        sender=ClearanceApplication,
+        application=application,
+        old_status=old_status,
+        new_status=new_status,
+    )
     return application
 
 

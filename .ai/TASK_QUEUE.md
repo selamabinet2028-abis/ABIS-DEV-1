@@ -211,7 +211,13 @@ Status note: DONE — 2026-07-05: decision endpoint (in_review, sup/admin) +
 Task ID: T-015
 Description: notifications — SmsMessage outbox, ConsoleSmsProvider (dev), status
   notification triggers (submitted/paid/ready), templates.
-Priority: Medium · Status: TODO
+Priority: Medium · Status: DONE — 2026-07-05: SmsTemplate (seeded x3) +
+  SmsMessage outbox, SmsProvider ABC + ConsoleSmsProvider (ABIS_SMS_PROVIDER),
+  Celery send task (idempotent, failure keeps row), triggers via new
+  application_status_changed signal from registration.transition (ADR-024;
+  ClearanceApplication.contact_phone added), outbox/templates/send-test
+  endpoints. pytest 342/342 (submit/paid-webhook/issue each enqueue the
+  right SMS row w/ context), cov 98%, schema clean.
 Verification method: pytest — status change enqueues SMS row.
 
 Task ID: T-016

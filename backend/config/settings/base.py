@@ -208,6 +208,7 @@ ABIS_AUDITED_MODELS = [
     "payments.ReconciliationBatch",
     "clearance.Certificate",
     "apimgmt.ApiCredential",
+    "notifications.SmsTemplate",
 ]
 ABIS_AUDIT_MASK_FIELDS = {"password", "template_bytes", "key_hash"}
 ABIS_AUDIT_IGNORE_FIELDS = {"last_login", "updated_at"}
@@ -242,6 +243,11 @@ ABIS_PAYMENT_PROVIDERS = {
         "ABIS_PROVIDER_CHAPA", default="apps.payments.providers.sandbox.SandboxProvider"
     ),
 }
+# SMS provider adapter (T-015): swap for the real gateway driver in prod.
+ABIS_SMS_PROVIDER = env(
+    "ABIS_SMS_PROVIDER", default="apps.notifications.providers.ConsoleSmsProvider"
+)
+
 # Certificates (T-014): validity window + QR payload HMAC secret
 ABIS_CERT_VALIDITY_DAYS = env.int("ABIS_CERT_VALIDITY_DAYS", default=180)
 ABIS_QR_SECRET = env("ABIS_QR_SECRET", default="dev-only-qr-secret-change-me")
