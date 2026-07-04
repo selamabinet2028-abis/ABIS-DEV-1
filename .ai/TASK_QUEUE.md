@@ -168,7 +168,14 @@ Task ID: T-012
 Description: registration + appointments — ClearanceApplication with tracking_no
   generator + status machine; document scan upload; public Station/TimeSlot/
   Appointment booking endpoints with availability logic.
-Priority: High · Status: TODO
+Priority: High · Status: DONE — 2026-07-04: ClearanceApplication
+  (PCC-YYYY-NNNNNN seq, 8-state machine enforced in services only — status
+  read-only in API, ADR-021), ID document upload + submit gate; TimeSlot
+  capacity model + Appointment w/ conditional unique (phone,slot,date,booked);
+  public stations/slots/booking endpoints (AllowAny + public throttle scope,
+  select_for_update capacity, cancel frees seat); staff stations/time-slots/
+  appointments CRUD. pytest 282/282 (double-booking + capacity + illegal
+  transitions all rejected), cov 98%, schema clean.
 Verification method: pytest — booking prevents double-booking; status transitions enforced.
 
 Task ID: T-013

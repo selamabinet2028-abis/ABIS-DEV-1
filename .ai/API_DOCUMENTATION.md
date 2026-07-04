@@ -52,20 +52,34 @@ operator/investigator/supervisor/admin, persons write = operator/admin;
 other base data read = any staff role, write = admin.
 
 ### registration & clearance
-`POST /applications/` → creates tracking_no ·
-`GET /applications/?status=&search=` · `GET|PATCH /applications/{id}/` ·
-`POST /applications/{id}/submit/` · `POST /applications/{id}/decision/`
-(`{decision: approved|rejected, note}`) ·
-`POST /applications/{id}/issue-certificate/` → generates PDF + QR ·
-`GET /certificates/{id}/download/`
+`POST /applications/` `{person, purpose, notes?}` → tracking_no
+`PCC-YYYY-NNNNNN`, status draft · `GET /applications/?status=&search=`
+(search incl. person names/person_no) · `GET|PATCH /applications/{id}/`
+(**status is read-only** — transitions only via dedicated endpoints/services,
+ADR-021; machine: draft→submitted→paid→biometrics_captured→in_review→
+approved|rejected, approved→certificate_issued) ·
+`POST /applications/{id}/document/` multipart (scanned ID; pdf/jpg/png) ·
+`POST /applications/{id}/submit/` (requires ID document) ·
+`POST /applications/{id}/decision/` (`{decision, note}`, T-014) ·
+`POST /applications/{id}/issue-certificate/` → PDF + QR (T-014) ·
+`GET /certificates/{id}/download/` (T-014).
+RBAC: operator/supervisor/admin.
 
 ### verification (PUBLIC)
 `GET /public/verify/{verification_no}/` → `{valid, holder_name_masked, issued_at, expires_at, status}` ·
 `POST /public/verify/qr/` `{qr_payload}` · Institutional: `POST /verify/api/` (API key, full detail)
 
 ### appointments (public booking + staff admin)
-`GET /public/stations/` · `GET /public/stations/{id}/slots/?date=` ·
-`POST /public/appointments/` · staff: `CRUD /appointments/`, `CRUD /stations/`
+PUBLIC (AllowAny, throttle scope `public` 30/min):
+`GET /public/stations/` (active only, limited fields) ·
+`GET /public/stations/{id}/slots/?date=YYYY-MM-DD` →
+`[{slot_id, start_time, end_time, capacity, available}]` (past dates 400) ·
+`POST /public/appointments/` `{station, slot, date, full_name, phone,
+tracking_no?}` — capacity enforced under select_for_update, one active
+booking per phone/slot/date (DB constraint), cancelled bookings free
+capacity (ADR-021).
+Staff: `GET|PATCH /appointments/` (status transitions; creation is public),
+`CRUD /stations/` + `CRUD /time-slots/` (admin write; slot windows validated).
 
 ### payments
 `POST /payments/initiate/` `{application_id, method}` → `{payment_id, checkout_ref}` ·

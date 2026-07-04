@@ -147,6 +147,7 @@ REST_FRAMEWORK = {
         "anon": "60/min",
         "user": "600/min",
         "auth": "10/min",  # login attempts (ScopedRateThrottle on LoginView)
+        "public": "30/min",  # anonymous portal endpoints (verify, booking)
     },
 }
 
@@ -198,6 +199,9 @@ ABIS_AUDITED_MODELS = [
     "watchlist.Watchlist",
     "watchlist.WatchlistEntry",
     "watchlist.WatchlistAlert",
+    "registration.ClearanceApplication",
+    "appointments.TimeSlot",
+    "appointments.Appointment",
 ]
 ABIS_AUDIT_MASK_FIELDS = {"password", "template_bytes"}
 ABIS_AUDIT_IGNORE_FIELDS = {"last_login", "updated_at"}

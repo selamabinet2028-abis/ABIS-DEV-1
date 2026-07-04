@@ -1,6 +1,6 @@
 # ABIS_MEMORY.md — Persistent Project Memory
 
-> Last updated: 2026-07-04 (T-001..T-011 DONE — through watchlist/realtime alerts)
+> Last updated: 2026-07-04 (T-001..T-012 DONE — through registration/appointments)
 
 ## 1. ABIS Identity
 
@@ -73,11 +73,16 @@ Feature modules begin at T-004.
   active lists, incl. dedup re-enrollment) + Channels push; JWT ws auth
   (?token=) + AlertConsumer role gate (ADR-020); communicator tests green.
   242 tests, 98%.
+  **T-012** registration+appointments: PCC tracking numbers, 8-state machine
+  (transitions ONLY via registration.services.transition — ADR-021;
+  mark_paid ready for T-013), ID doc upload + submit gate; TimeSlot capacity
+  + race-safe public booking (select_for_update + conditional unique),
+  public throttle scope. 282 tests, 98%.
 - **Partially completed:** None.
-- **Unfinished:** T-012 onward in `TASK_QUEUE.md` — registration→
-  certificates chain (first PUBLIC endpoints), payments, notifications,
-  reports, apimgmt/devices/documents, T-018 frontend, seed, hardening,
-  deployment, docs.
+- **Unfinished:** T-013 onward in `TASK_QUEUE.md` — payments (webhook →
+  mark_paid), clearance/verification certificates, notifications, reports,
+  apimgmt/devices/documents, T-018 frontend, seed, hardening, deployment,
+  docs.
 
 ## 3. Important Technologies (agreed stack)
 
