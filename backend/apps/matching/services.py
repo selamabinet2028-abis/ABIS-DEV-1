@@ -14,6 +14,7 @@ from django.utils import timezone
 
 from apps.enrollment.models import (BiometricRecord, BiometricTemplate,
                                     Enrollment, Modality)
+from apps.investigation.models import LatentPrint
 from apps.preprocessing.crypto import decrypt_bytes
 
 from .engines.base import get_engine
@@ -62,6 +63,26 @@ def _record_gallery(
         yield record, decrypt_bytes(bytes(record.template.template_bytes))
 
 
+def latent_template(latent: LatentPrint) -> bytes:
+    """Extract a template from the latent's working image (enhanced wins)."""
+    engine = get_engine()
+    field = latent.working_image_field()
+    with field.open("rb") as fh:
+        return engine.extract(fh.read())
+
+
+def _latent_gallery(
+    modality: str, *, exclude_latent_ids: tuple = ()
+) -> Iterator[tuple[LatentPrint, bytes]]:
+    latents = (
+        LatentPrint.objects.filter(modality=modality)
+        .exclude(id__in=exclude_latent_ids)
+        .select_related("case")
+    )
+    for latent in latents.iterator():
+        yield latent, latent_template(latent)
+
+
 def _dispatch(job: MatchJob) -> None:
     from .tasks import run_match_job
 
@@ -83,6 +104,20 @@ def start_identify_job(
     job = MatchJob.objects.create(
         job_type=job_type,
         probe_record=probe_record,
+        threshold=threshold if threshold is not None else default_threshold(),
+        requested_by=requested_by,
+    )
+    _dispatch(job)
+    return job
+
+
+def start_latent_search_job(
+    *, latent: LatentPrint, job_type: str, threshold: float | None, requested_by
+) -> MatchJob:
+    """LT-TP / LT-LT launch — called by investigation views (documented API)."""
+    job = MatchJob.objects.create(
+        job_type=job_type,
+        probe_latent=latent,
         threshold=threshold if threshold is not None else default_threshold(),
         requested_by=requested_by,
     )
@@ -145,12 +180,14 @@ def execute_job(job: MatchJob) -> None:
     try:
         if job.job_type == MatchJob.JobType.DEDUP:
             ranked = _run_dedup(engine, job)
+        elif job.job_type == MatchJob.JobType.TP_LT:
+            ranked = _run_tp_lt(engine, job)
+        elif job.job_type == MatchJob.JobType.LT_TP:
+            ranked = _run_lt_tp(engine, job)
+        elif job.job_type == MatchJob.JobType.LT_LT:
+            ranked = _run_lt_lt(engine, job)
         elif job.job_type in JOB_PROBE_MODALITY:
             ranked = _run_identify(engine, job)
-        elif job.job_type in LATENT_JOB_TYPES:
-            raise NotImplementedError(
-                "Latent searches arrive with T-009 (investigation app)."
-            )
         else:
             raise ValueError(f"Unsupported job type {job.job_type}")
     except Exception as exc:
@@ -160,10 +197,15 @@ def execute_job(job: MatchJob) -> None:
         job.save(update_fields=["status", "error", "finished_at"])
         return
 
-    for rank, (record, score) in enumerate(ranked, start=1):
-        MatchCandidate.objects.create(
-            job=job, person=record.person, record=record, score=score, rank=rank
-        )
+    for rank, (target, score) in enumerate(ranked, start=1):
+        if isinstance(target, LatentPrint):
+            MatchCandidate.objects.create(
+                job=job, latent=target, score=score, rank=rank
+            )
+        else:
+            MatchCandidate.objects.create(
+                job=job, person=target.person, record=target, score=score, rank=rank
+            )
 
     job.status = MatchJob.Status.DONE
     job.finished_at = timezone.now()
@@ -174,10 +216,43 @@ def _run_identify(engine, job: MatchJob) -> list[tuple[BiometricRecord, float]]:
     probe = record_template(job.probe_record)
     if probe is None:
         raise ValueError("Probe record has no template.")
-    if job.job_type == MatchJob.JobType.TP_LT:
-        return []  # latent gallery arrives with T-009
     gallery = _record_gallery(
         JOB_PROBE_MODALITY[job.job_type], exclude_record_ids=(job.probe_record_id,)
+    )
+    return engine.identify(
+        probe, gallery, threshold=job.threshold, top_k=settings.ABIS_MATCH_TOP_K
+    )
+
+
+def _run_tp_lt(engine, job: MatchJob) -> list[tuple[LatentPrint, float]]:
+    """Tenprint probe vs the unsolved latent file."""
+    probe = record_template(job.probe_record)
+    if probe is None:
+        raise ValueError("Probe record has no template.")
+    gallery = _latent_gallery(job.probe_record.modality)
+    return engine.identify(
+        probe, gallery, threshold=job.threshold, top_k=settings.ABIS_MATCH_TOP_K
+    )
+
+
+def _run_lt_tp(engine, job: MatchJob) -> list[tuple[BiometricRecord, float]]:
+    """Latent probe vs the person database (same modality records)."""
+    if job.probe_latent is None:
+        raise ValueError("LT-TP job has no probe latent.")
+    probe = latent_template(job.probe_latent)
+    gallery = _record_gallery(job.probe_latent.modality)
+    return engine.identify(
+        probe, gallery, threshold=job.threshold, top_k=settings.ABIS_MATCH_TOP_K
+    )
+
+
+def _run_lt_lt(engine, job: MatchJob) -> list[tuple[LatentPrint, float]]:
+    """Latent probe vs the other unsolved latents."""
+    if job.probe_latent is None:
+        raise ValueError("LT-LT job has no probe latent.")
+    probe = latent_template(job.probe_latent)
+    gallery = _latent_gallery(
+        job.probe_latent.modality, exclude_latent_ids=(job.probe_latent_id,)
     )
     return engine.identify(
         probe, gallery, threshold=job.threshold, top_k=settings.ABIS_MATCH_TOP_K

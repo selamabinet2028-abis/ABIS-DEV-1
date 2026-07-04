@@ -103,10 +103,23 @@ Defaults: threshold 80, top-k 20 (`ABIS_MATCH_*` env); engine selected via
 `GET /pis/jobs/{id}/candidates/`
 
 ### investigation
-`CRUD /cases/` · `POST /cases/{id}/latents/` multipart ·
-`POST /latents/{id}/enhance/` `{operations:[...]}` (contrast, invert, rotate, crop) ·
-`POST /latents/{id}/minutiae/extract/` · `PATCH /latents/{id}/minutiae/` ·
-`POST /latents/{id}/search/` `{job_type: LT-TP|LT-LT}` · `CRUD /cases/{id}/evidence/`
+`CRUD /cases/` (no hard delete; `case_no` auto `CASE-YYYY-NNNNNN`) ·
+`GET /cases/dashboard/` (aggregates: cases by status, latents, evidence,
+confirmed latent hits) · `POST /cases/{id}/latents/` multipart
+`{modality: finger|palm, image, notes?}` ·
+`GET|POST /cases/{id}/evidence/` (chain of custody: collected_by,
+collected_at, sha256 auto) · `GET /latents/` `?case=&modality=` ·
+`POST /latents/{id}/enhance/` `{operations:[{op: contrast|invert|rotate|crop,
+factor?|angle?|box?}]}` — applied to the working image, every call appended
+to `editor_history` (who/when/ops/result sha256) ·
+`POST /latents/{id}/minutiae/extract/` (deterministic stub; schema
+{x,y,angle,type,quality}) · `PATCH /latents/{id}/minutiae/` (validated
+replace) · `POST /latents/{id}/search/` `{job_type: LT-TP|LT-LT, threshold?}`
+→ 202 `{job_id}` (searches use the ENHANCED image when present) ·
+`GET /latents/{id}/image/` + `/enhanced-image/` (**audited**). RBAC: read
+inv/sup/admin, write inv/admin. Latent-file hits appear as candidates with
+`latent` set and `person: null` (ADR-018); TP-LT via /match/identify/ now
+searches the latent gallery.
 
 ### watchlist
 `CRUD /watchlists/` · `CRUD /watchlists/{id}/entries/` ·

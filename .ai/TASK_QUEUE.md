@@ -128,7 +128,14 @@ Description: investigation app — Case, LatentPrint, EvidenceDocument (chain of
   custody); latent upload; enhance operations endpoint (contrast/invert/rotate/
   crop via Pillow, history kept); minutiae auto-extract stub + manual edit;
   LT-TP / LT-LT search launch; case dashboards data.
-Priority: High · Status: TODO
+Priority: High · Status: DONE — 2026-07-04: Case (CASE-YYYY-NNNNNN seq),
+  LatentPrint (enhance ops w/ editor_history chain of custody, deterministic
+  minutiae stub + validated manual edit, audited image downloads),
+  EvidenceDocument (collected_by/at + sha256); LT-TP/LT-LT/TP-LT execution
+  wired (probe_latent FK, latent candidates w/ nullable person/record +
+  check constraint — ADR-018); case dashboard aggregates. pytest 206/206
+  (full latent workflow upload→enhance→minutiae→LT-TP→hit decision green),
+  cov 98%, schema clean (ENUM_NAME_OVERRIDES added).
 Verification method: pytest — full latent workflow to candidate decision.
 
 Task ID: T-010

@@ -164,6 +164,13 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
     "SCHEMA_PATH_PREFIX": r"/api/v1",
+    # Distinct names for same-named choice sets across apps.
+    "ENUM_NAME_OVERRIDES": {
+        "BiometricModalityEnum": "apps.enrollment.models.Modality.choices",
+        "LatentModalityEnum": "apps.investigation.models.LATENT_MODALITY_CHOICES",
+        "MatchJobTypeEnum": "apps.matching.models.MATCH_JOB_TYPE_CHOICES",
+        "LatentSearchJobTypeEnum": "apps.investigation.serializers.LATENT_SEARCH_JOB_TYPES",
+    },
 }
 
 CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
@@ -184,6 +191,9 @@ ABIS_AUDITED_MODELS = [
     "enrollment.BiometricTemplate",
     "matching.MatchJob",
     "matching.MatchCandidate",
+    "investigation.Case",
+    "investigation.LatentPrint",
+    "investigation.EvidenceDocument",
 ]
 ABIS_AUDIT_MASK_FIELDS = {"password", "template_bytes"}
 ABIS_AUDIT_IGNORE_FIELDS = {"last_login", "updated_at"}

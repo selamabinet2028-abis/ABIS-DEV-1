@@ -4,10 +4,21 @@ from .models import MatchCandidate, MatchJob
 
 
 class MatchCandidateSerializer(serializers.ModelSerializer):
-    person_no = serializers.CharField(source="person.person_no", read_only=True)
-    person_name = serializers.CharField(source="person.full_name", read_only=True)
-    record_modality = serializers.CharField(source="record.modality", read_only=True)
-    record_position = serializers.CharField(source="record.position", read_only=True)
+    person_no = serializers.CharField(
+        source="person.person_no", read_only=True, default=None
+    )
+    person_name = serializers.CharField(
+        source="person.full_name", read_only=True, default=None
+    )
+    record_modality = serializers.CharField(
+        source="record.modality", read_only=True, default=None
+    )
+    record_position = serializers.CharField(
+        source="record.position", read_only=True, default=None
+    )
+    latent_case_no = serializers.CharField(
+        source="latent.case.case_no", read_only=True, default=None
+    )
     verified_by_username = serializers.CharField(
         source="verified_by.username", read_only=True, default=None
     )
@@ -23,6 +34,8 @@ class MatchCandidateSerializer(serializers.ModelSerializer):
             "record",
             "record_modality",
             "record_position",
+            "latent",
+            "latent_case_no",
             "score",
             "rank",
             "decision",
@@ -46,6 +59,7 @@ class MatchJobSerializer(serializers.ModelSerializer):
             "status",
             "probe_record",
             "probe_enrollment",
+            "probe_latent",
             "threshold",
             "requested_by_username",
             "started_at",

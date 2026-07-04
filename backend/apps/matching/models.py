@@ -45,6 +45,13 @@ class MatchJob(BaseModel):
         on_delete=models.PROTECT,
         related_name="dedup_jobs",
     )
+    probe_latent = models.ForeignKey(
+        "investigation.LatentPrint",
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="match_jobs",
+    )
     threshold = models.FloatField()
     requested_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -76,13 +83,28 @@ class MatchCandidate(BaseModel):
     job = models.ForeignKey(
         MatchJob, on_delete=models.CASCADE, related_name="candidates"
     )
+    # Person-database hits carry person+record; latent-file hits carry latent
+    # (person unknown by definition). See ADR-018.
     person = models.ForeignKey(
-        "basedata.Person", on_delete=models.PROTECT, related_name="match_candidates"
+        "basedata.Person",
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="match_candidates",
     )
     record = models.ForeignKey(
         "enrollment.BiometricRecord",
+        null=True,
+        blank=True,
         on_delete=models.PROTECT,
         related_name="match_candidates",
+    )
+    latent = models.ForeignKey(
+        "investigation.LatentPrint",
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="candidate_hits",
     )
     score = models.FloatField()
     rank = models.PositiveSmallIntegerField()
@@ -103,8 +125,18 @@ class MatchCandidate(BaseModel):
         constraints = [
             models.UniqueConstraint(
                 fields=["job", "rank"], name="uniq_candidate_job_rank"
-            )
+            ),
+            models.CheckConstraint(
+                condition=models.Q(record__isnull=False)
+                | models.Q(latent__isnull=False),
+                name="candidate_has_record_or_latent",
+            ),
         ]
 
     def __str__(self) -> str:
-        return f"#{self.rank} {self.person_id} @ {self.score} ({self.decision})"
+        target = self.person_id or self.latent_id
+        return f"#{self.rank} {target} @ {self.score} ({self.decision})"
+
+
+# Module-level alias for spectacular ENUM_NAME_OVERRIDES (nested paths fail).
+MATCH_JOB_TYPE_CHOICES = MatchJob.JobType.choices

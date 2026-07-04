@@ -35,7 +35,7 @@ class IdentifyView(APIView):
             return Response(
                 {
                     "job_type": [
-                        "Latent-probe searches arrive with the investigation module (T-009)."
+                        "Latent-probe searches launch from POST /latents/{id}/search/."
                     ]
                 },
                 status=status.HTTP_400_BAD_REQUEST,

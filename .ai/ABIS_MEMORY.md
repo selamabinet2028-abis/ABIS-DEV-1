@@ -1,6 +1,6 @@
 # ABIS_MEMORY.md — Persistent Project Memory
 
-> Last updated: 2026-07-04 (T-001..T-008 DONE — through matching engine/jobs)
+> Last updated: 2026-07-04 (T-001..T-009 DONE — through investigation/latents)
 
 ## 1. ABIS Identity
 
@@ -59,10 +59,15 @@ Feature modules begin at T-004.
   MatchJob/MatchCandidate (+probe_enrollment for DEDUP — ADR-017), Celery
   run_match_job, identify/verify/jobs/decision endpoints, dedup wired into
   enrollment complete (duplicate person flagged @100). Engine contract tests
-  gate future SDK engines. 174 tests, 98%. LT-* searches + probe_latent →
-  T-009; ws job push → T-011/T-018.
+  gate future SDK engines. 174 tests, 98%. ws job push → T-011/T-018.
+  **T-009** investigation: Case/LatentPrint/EvidenceDocument (chain of
+  custody via editor_history + sha256), Pillow enhance ops, deterministic
+  minutiae stub, LT-TP/LT-LT/TP-LT wired (latent candidates: nullable
+  person/record + latent FK — ADR-018; latent templates transient from
+  working image), case dashboard. Full latent workflow to hit decision
+  green. 206 tests, 98%.
 - **Partially completed:** None.
-- **Unfinished:** T-009 onward in `TASK_QUEUE.md` — investigation, pis,
+- **Unfinished:** T-010 onward in `TASK_QUEUE.md` — pis face search,
   watchlist, registration→certificates chain, reports, T-018 frontend,
   deployment.
 

@@ -77,8 +77,10 @@ erDiagram
   probe: `probe_record FK` (TP-*/FACE) or `probe_latent FK` (LT-*, T-009) or
   `probe_enrollment FK` (DEDUP multi-record probe — ADR-017), `status` in
   {queued, running, done, failed}, `threshold`, `requested_by FK`, timings)
-- **MatchCandidate** (`job FK`, `person FK`, `record FK`, `score`, `rank`, `decision`
-  in {undecided, hit, no_hit}, `verified_by FK`)
+- **MatchCandidate** (`job FK`, `person FK` nullable, `record FK` nullable,
+  `latent FK` nullable — person-DB hits carry person+record, latent-file hits
+  carry latent (identity unknown); DB check: record OR latent set (ADR-018) —
+  `score`, `rank`, `decision` in {undecided, hit, no_hit}, `verified_by FK`)
 - **Case** (`case_no`, `category FK`, `status`, `lead_investigator FK`)
 - **LatentPrint** (`case FK`, image path, enhanced image path, minutiae JSONB,
   `modality` finger|palm, editor history JSONB)
