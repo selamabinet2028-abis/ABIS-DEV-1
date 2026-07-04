@@ -80,4 +80,10 @@ Context: DATABASE_DESIGN requires unique person_no, JSONB addresses w/ GIN, soft
 Chosen: (1) `person_no` = `P-YYYY-NNNNNN` from a dedicated Postgres sequence (`abis_person_no_seq`, migration RunSQL) — concurrency-safe, never resets. (2) DELETE = soft delete (`is_deleted`), API queryset excludes deleted rows; hard deletes never happen. (3) Names use Ethiopian convention: first/middle (father)/last (grandfather), middle+last optional. (4) `national_id_no` (Fayda FIN) unique-nullable; serializers coerce '' → NULL. (5) Photo upload is a dedicated multipart action with extension whitelist + size cap + Pillow verification; files under `persons/photos/{person_id}/`. (6) Per-resource RBAC via `RoleMatrixPermission` (read vs write role sets) added to accounts.permissions.
 Future impact: enrollment (T-007) links BiometricRecord → Person; dedup (T-008) flags duplicate persons rather than deleting; T-020 IDOR tests cover person detail routes.
 
+## ADR-016
+Date: 2026-07-04 · Decision: Biometric capture pipeline internals (T-007)
+Context: No real capture SDK/NFIQ locally; templates must be encrypted at rest (ADR-008); MockEngine (T-008) needs comparable features.
+Chosen: (1) Quality = contrast+Laplacian heuristic mapped to 1–5 (preprocessing.quality_score); production SDK replaces the function body, signature stays. (2) Template = `GRID16` (16×16 equalized grayscale, prefix `GRID16:`) — deterministic, similarity-comparable; engine/version recorded on BiometricTemplate. (3) Encryption via Fernet, key `ABIS_FIELD_KEY` env; dev default key ships in settings/.env.example, prod REQUIRES the env (fail fast) — rotate = re-encrypt job (future). (4) `template_bytes` added to audit mask list. (5) Rejected captures persist (accepted=false, no template) for operator feedback + stats. (6) Minimal `appointments.Station` created early (Enrollment FK), T-012 extends — same pattern as OrgUnit/ADR-009.
+Future impact: T-008 MockEngine consumes GRID16 via decrypt; real SDK integration swaps preprocessing internals + engine class only.
+
 (Agents: append new ADRs below; never edit past entries.)

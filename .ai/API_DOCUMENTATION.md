@@ -73,11 +73,17 @@ other base data read = any staff role, write = admin.
 `GET /payments/?status=` · `POST /payments/reconcile/`
 
 ### enrollment
-`POST /enrollments/` `{person_id, station_id}` ·
+`POST /enrollments/` `{person, station?}` (operator auto-set) ·
 `POST /enrollments/{id}/biometrics/` multipart `{modality, position, image}` →
-runs quality check, returns `{record_id, quality_score, accepted}` ·
-`POST /enrollments/{id}/complete/` → triggers DEDUP MatchJob ·
-`GET /biometric-records/{id}/image/`
+quality check (NFIQ-like 1–5, threshold `ABIS_QUALITY_THRESHOLD`), returns
+`{record_id, quality_score, accepted}`; accepted records get a
+Fernet-encrypted template (`ABIS_FIELD_KEY`); rejected records persist with
+`accepted=false` and no template. Modalities: finger (positions "1"–"10"),
+palm (left/right), face (frontal/left_profile/right_profile) ·
+`POST /enrollments/{id}/complete/` → `{status, dedup_job_id}` (job wired in
+T-008; requires ≥1 accepted record) · `GET /biometric-records/{id}/image/`
+(**access audited** as VIEW) · `GET /enrollments/` embeds records +
+quality_summary. RBAC: read op/inv/sup/admin, write op/admin.
 
 ### matching
 `POST /match/identify/` `{probe: record_id|latent_id, job_type, threshold}` → 202 job ·

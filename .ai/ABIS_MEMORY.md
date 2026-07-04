@@ -1,6 +1,6 @@
 # ABIS_MEMORY.md — Persistent Project Memory
 
-> Last updated: 2026-07-04 (T-001..T-006 DONE — foundation, accounts, audit, basedata)
+> Last updated: 2026-07-04 (T-001..T-007 DONE — through enrollment/preprocessing)
 
 ## 1. ABIS Identity
 
@@ -50,9 +50,14 @@ Feature modules begin at T-004.
   addresses, Fayda FIN unique-nullable), OrgUnit/LookupValue/
   InvestigationCategory CRUD, validated photo upload, audited person search;
   `RoleMatrixPermission` for read/write role splits (ADR-015). 124 tests, 99%.
+  **T-007** enrollment+preprocessing: Fernet-encrypted GRID16 templates
+  (ABIS_FIELD_KEY; prod requires env — ADR-016), NFIQ-like quality 1–5 w/
+  threshold rejection, NIST-ish metadata + sha256, audited image download,
+  dedup stub at `enrollment.services.trigger_dedup` (T-008 replaces);
+  minimal appointments.Station created early. 143 tests, 98%.
 - **Partially completed:** None.
-- **Unfinished:** T-007 onward in `TASK_QUEUE.md` — enrollment, matching,
-  remaining modules, T-018 frontend features, deployment.
+- **Unfinished:** T-008 onward in `TASK_QUEUE.md` — matching engine + jobs,
+  investigation, remaining modules, T-018 frontend features, deployment.
 
 ## 3. Important Technologies (agreed stack)
 

@@ -97,7 +97,13 @@ Description: enrollment + preprocessing — Enrollment, BiometricRecord,
   BiometricTemplate (Fernet-encrypted bytes); multipart capture endpoint per
   modality/position; quality scoring (Pillow/OpenCV heuristic 1–5); NIST-ish
   metadata; reject below threshold; complete endpoint stub (dedup wired in T-008).
-Priority: High · Status: TODO
+Priority: High · Status: DONE — 2026-07-04: Enrollment/BiometricRecord/
+  BiometricTemplate (Fernet via ABIS_FIELD_KEY, GRID16 mock template —
+  ADR-016), multipart capture w/ NFIQ-like scoring + threshold rejection +
+  NIST-ish metadata + sha256, complete endpoint (dedup stub → T-008), audited
+  image download, minimal appointments.Station created early. pytest 143/143
+  (10-print flow, encryption at rest proven, low-quality rejected), cov 98%,
+  schema clean.
 Verification method: pytest — upload 10-print set, quality scores persisted,
   template encrypted (bytes differ from plaintext), low-quality rejected.
 

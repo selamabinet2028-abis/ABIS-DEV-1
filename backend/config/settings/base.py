@@ -178,12 +178,23 @@ ABIS_AUDITED_MODELS = [
     "basedata.Person",
     "basedata.LookupValue",
     "basedata.InvestigationCategory",
+    "appointments.Station",
+    "enrollment.Enrollment",
+    "enrollment.BiometricRecord",
+    "enrollment.BiometricTemplate",
 ]
-ABIS_AUDIT_MASK_FIELDS = {"password"}
+ABIS_AUDIT_MASK_FIELDS = {"password", "template_bytes"}
 ABIS_AUDIT_IGNORE_FIELDS = {"last_login", "updated_at"}
 
 # Upload validation (security golden rule)
 ABIS_MAX_UPLOAD_MB = env.int("ABIS_MAX_UPLOAD_MB", default=5)
+
+# Biometric template encryption (ADR-008) + NFIQ-like acceptance threshold
+ABIS_FIELD_KEY = env(
+    "ABIS_FIELD_KEY",
+    default="neP8RPJf4BdE388S-9W5FDvEw0bA6fGfS6nkjG0atJY=",  # dev-only key
+)
+ABIS_QUALITY_THRESHOLD = env.int("ABIS_QUALITY_THRESHOLD", default=2)
 
 # Account lockout + refresh-cookie policy (ADR-013)
 ABIS_AUTH = {

@@ -7,6 +7,7 @@ DEBUG = False
 # Required env in prod — fail fast if missing.
 SECRET_KEY = env("DJANGO_SECRET_KEY")  # noqa: F405
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS")  # noqa: F405
+ABIS_FIELD_KEY = env("ABIS_FIELD_KEY")  # noqa: F405 — never the dev default
 CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])  # noqa: F405
 
 # Security headers / cookies (nginx terminates TLS and forwards proto).
