@@ -60,6 +60,7 @@ class MatchJobSerializer(serializers.ModelSerializer):
             "probe_record",
             "probe_enrollment",
             "probe_latent",
+            "probe_photo",
             "threshold",
             "requested_by_username",
             "started_at",

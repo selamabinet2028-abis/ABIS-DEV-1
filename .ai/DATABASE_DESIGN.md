@@ -75,8 +75,11 @@ erDiagram
 ### matching / pis / investigation
 - **MatchJob** (`job_type` in {TP-TP, TP-LT, LT-TP, LT-LT, FACE-1N, VERIFY-1_1, DEDUP},
   probe: `probe_record FK` (TP-*/FACE) or `probe_latent FK` (LT-*, T-009) or
-  `probe_enrollment FK` (DEDUP multi-record probe — ADR-017), `status` in
+  `probe_enrollment FK` (DEDUP multi-record probe — ADR-017) or
+  `probe_photo FK` (pis PhotoProbe upload — ADR-019), `status` in
   {queued, running, done, failed}, `threshold`, `requested_by FK`, timings)
+- **PhotoProbe** (pis; uploaded face image path, `sha256`, `uploaded_by FK` —
+  probe of photo-initiated FACE-1N searches, ADR-019)
 - **MatchCandidate** (`job FK`, `person FK` nullable, `record FK` nullable,
   `latent FK` nullable — person-DB hits carry person+record, latent-file hits
   carry latent (identity unknown); DB check: record OR latent set (ADR-018) —

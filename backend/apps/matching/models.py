@@ -52,6 +52,13 @@ class MatchJob(BaseModel):
         on_delete=models.PROTECT,
         related_name="match_jobs",
     )
+    probe_photo = models.ForeignKey(
+        "pis.PhotoProbe",
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="match_jobs",
+    )
     threshold = models.FloatField()
     requested_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,

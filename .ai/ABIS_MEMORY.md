@@ -1,6 +1,6 @@
 # ABIS_MEMORY.md — Persistent Project Memory
 
-> Last updated: 2026-07-04 (T-001..T-009 DONE — through investigation/latents)
+> Last updated: 2026-07-04 (T-001..T-010 DONE — through PIS face search)
 
 ## 1. ABIS Identity
 
@@ -66,9 +66,12 @@ Feature modules begin at T-004.
   person/record + latent FK — ADR-018; latent templates transient from
   working image), case dashboard. Full latent workflow to hit decision
   green. 206 tests, 98%.
+  **T-010** pis: PhotoProbe + MatchJob.probe_photo (ADR-019), photo-probe
+  FACE-1N w/ sync decode validation, candidate review + audited probe image;
+  face search from seeded faces green. 218 tests, 98%.
 - **Partially completed:** None.
-- **Unfinished:** T-010 onward in `TASK_QUEUE.md` — pis face search,
-  watchlist, registration→certificates chain, reports, T-018 frontend,
+- **Unfinished:** T-011 onward in `TASK_QUEUE.md` — watchlist + Channels
+  alerts, registration→certificates chain, reports, T-018 frontend,
   deployment.
 
 ## 3. Important Technologies (agreed stack)

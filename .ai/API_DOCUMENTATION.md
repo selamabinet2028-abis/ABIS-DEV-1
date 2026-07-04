@@ -99,8 +99,13 @@ Defaults: threshold 80, top-k 20 (`ABIS_MATCH_*` env); engine selected via
 `MATCHING_ENGINE` setting (MockEngine in dev, ADR-004/017).
 
 ### pis
-`POST /pis/search/` multipart face image → 202 FACE-1N job ·
-`GET /pis/jobs/{id}/candidates/`
+`POST /pis/search/` multipart `{image, threshold?, notes?}` → 202
+`{job_id, probe_id}` (photo persisted as PhotoProbe w/ sha256 — ADR-019;
+undecodable/oversize/bad-ext → 400, nothing persisted) ·
+`GET /pis/jobs/{id}/` (FACE-1N only; includes probe_photo_detail) ·
+`GET /pis/jobs/{id}/candidates/` → `{job_id, status, candidates[]}` ·
+`GET /pis/probes/{id}/image/` (**audited**) · decisions via
+`POST /match/candidates/{id}/decision/`. RBAC: inv/sup/admin.
 
 ### investigation
 `CRUD /cases/` (no hard delete; `case_no` auto `CASE-YYYY-NNNNNN`) ·

@@ -141,7 +141,14 @@ Verification method: pytest — full latent workflow to candidate decision.
 Task ID: T-010
 Description: pis app — face photo search endpoint (FACE-1N via engine), photo
   investigation candidate review endpoints.
-Priority: High · Status: TODO
+Priority: High · Status: DONE — 2026-07-04: PhotoProbe model + probe_photo FK
+  on MatchJob (ADR-019), POST /pis/search/ multipart → 202 (sync decode
+  validation, nothing persisted on bad upload), job detail w/ probe info,
+  candidates review endpoint, audited probe image download; decisions reuse
+  matching endpoint. pytest 218/218 (face search returns candidates from
+  seeded faces @100 rank 1), cov 98%, schema clean. NOTE: dev-db migration
+  state glitch fixed (pis.0001 recorded w/o DDL after failed multi-app
+  migrate — un-recorded + re-applied).
 Verification method: pytest — face search returns candidates from seeded faces.
 
 Task ID: T-011

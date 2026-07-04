@@ -194,6 +194,7 @@ ABIS_AUDITED_MODELS = [
     "investigation.Case",
     "investigation.LatentPrint",
     "investigation.EvidenceDocument",
+    "pis.PhotoProbe",
 ]
 ABIS_AUDIT_MASK_FIELDS = {"password", "template_bytes"}
 ABIS_AUDIT_IGNORE_FIELDS = {"last_login", "updated_at"}

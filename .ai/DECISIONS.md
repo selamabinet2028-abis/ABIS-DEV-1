@@ -98,4 +98,10 @@ Context: LT-LT/TP-LT hits are other latents — identity unknown — but MatchCa
 Chosen: (1) MatchCandidate.person/record become nullable; new nullable `latent` FK; DB CheckConstraint requires record OR latent (DATABASE_DESIGN updated). (2) Latent templates are computed transiently at search time via engine.extract from the WORKING image (enhanced_image if present, else original) — never persisted, so no encryption-at-rest concern; destructive enhancement deliberately changes search results (tested). (3) `editor_history` JSONB records every enhance/minutiae action (who/when/ops/result sha256) for chain of custody. (4) case_no = CASE-YYYY-NNNNNN via PG sequence (same pattern as person_no). (5) Minutiae auto-extract is a deterministic cv2 corner stub; output schema {x,y,angle,type,quality} is the SDK contract. (6) EvidenceDocument.collected_by is free text (officers need not be system users). (7) spectacular ENUM_NAME_OVERRIDES added for cross-app enum name collisions (module-level choice aliases required — nested class paths don't import).
 Future impact: T-010 pis face search reuses record-candidate path; T-011 watchlist alerts read candidates w/ person set; real extractor swaps stub internals only.
 
+## ADR-019
+Date: 2026-07-04 · Decision: Photo-probe FACE-1N searches (T-010)
+Context: PIS searches start from an uploaded photo, not an enrolled record; the probe must survive for review + audit but is not an enrollment artifact.
+Chosen: pis owns `PhotoProbe` (image, sha256, uploaded_by; audited); MatchJob gains a fourth nullable probe FK `probe_photo`. FACE-1N resolves its probe as photo-first, record-fallback; photo probes are extracted transiently at run time (like latents), never stored as templates. Upload is validated synchronously (extension/size + engine.extract decode check) so nothing persists on a bad upload. Candidate review reuses matching candidates + decision endpoint.
+Future impact: T-019 seed uses PhotoProbe-free galleries (enrolled faces only); prod media hardening (T-021) must cover pis/probes/ paths.
+
 (Agents: append new ADRs below; never edit past entries.)

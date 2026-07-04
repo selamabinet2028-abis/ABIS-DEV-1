@@ -125,6 +125,20 @@ def start_latent_search_job(
     return job
 
 
+def start_photo_search_job(
+    *, photo_probe, threshold: float | None, requested_by
+) -> MatchJob:
+    """FACE-1N from an uploaded photo — called by pis views (documented API)."""
+    job = MatchJob.objects.create(
+        job_type=MatchJob.JobType.FACE_1N,
+        probe_photo=photo_probe,
+        threshold=threshold if threshold is not None else default_threshold(),
+        requested_by=requested_by,
+    )
+    _dispatch(job)
+    return job
+
+
 def start_dedup_job(enrollment: Enrollment, *, requested_by=None) -> MatchJob:
     """Called by enrollment.services on completion (documented cross-app API)."""
     job = MatchJob.objects.create(
@@ -213,11 +227,18 @@ def execute_job(job: MatchJob) -> None:
 
 
 def _run_identify(engine, job: MatchJob) -> list[tuple[BiometricRecord, float]]:
-    probe = record_template(job.probe_record)
-    if probe is None:
-        raise ValueError("Probe record has no template.")
+    exclude_record_ids: tuple = ()
+    if job.job_type == MatchJob.JobType.FACE_1N and job.probe_photo_id:
+        # PIS photo probe (ADR-019): extract from the uploaded image.
+        with job.probe_photo.image.open("rb") as fh:
+            probe = engine.extract(fh.read())
+    else:
+        probe = record_template(job.probe_record)
+        if probe is None:
+            raise ValueError("Probe record has no template.")
+        exclude_record_ids = (job.probe_record_id,)
     gallery = _record_gallery(
-        JOB_PROBE_MODALITY[job.job_type], exclude_record_ids=(job.probe_record_id,)
+        JOB_PROBE_MODALITY[job.job_type], exclude_record_ids=exclude_record_ids
     )
     return engine.identify(
         probe, gallery, threshold=job.threshold, top_k=settings.ABIS_MATCH_TOP_K
