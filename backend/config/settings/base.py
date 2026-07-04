@@ -29,6 +29,7 @@ DJANGO_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.postgres",  # GIN indexes (Person.addresses)
 ]
 
 THIRD_PARTY_APPS = [
@@ -174,9 +175,15 @@ ABIS_AUDITED_MODELS = [
     "accounts.User",
     "accounts.Role",
     "basedata.OrgUnit",
+    "basedata.Person",
+    "basedata.LookupValue",
+    "basedata.InvestigationCategory",
 ]
 ABIS_AUDIT_MASK_FIELDS = {"password"}
 ABIS_AUDIT_IGNORE_FIELDS = {"last_login", "updated_at"}
+
+# Upload validation (security golden rule)
+ABIS_MAX_UPLOAD_MB = env.int("ABIS_MAX_UPLOAD_MB", default=5)
 
 # Account lockout + refresh-cookie policy (ADR-013)
 ABIS_AUTH = {

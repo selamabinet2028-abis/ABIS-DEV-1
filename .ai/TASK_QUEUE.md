@@ -83,7 +83,13 @@ Verification method: pytest — mutation writes log; update/delete on AuditLog r
 Task ID: T-006
 Description: basedata app — Person (person cards), OrgUnit hierarchy, LookupValue,
   InvestigationCategory; CRUD + search (name/person_no/national_id); person photo upload.
-Priority: High · Status: TODO
+Priority: High · Status: DONE — 2026-07-04: Person (P-YYYY-NNNNNN via PG
+  sequence, soft delete, GIN addresses, unique-nullable Fayda FIN), OrgUnit
+  hierarchy CRUD, LookupValue (category+code unique), InvestigationCategory;
+  photo upload w/ whitelist+size+Pillow validation; person searches audited
+  via log_search; all 4 models in ABIS_AUDITED_MODELS; RoleMatrixPermission
+  added for read/write role splits (ADR-015). pytest 124/124, cov 99%,
+  schema clean.
 Verification method: pytest CRUD/search; audit rows created.
 
 Task ID: T-007

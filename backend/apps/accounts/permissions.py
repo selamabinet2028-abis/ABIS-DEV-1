@@ -46,3 +46,25 @@ class IsSupervisor(RolePermission):
 class IsAuditorReadOnly(RolePermission):
     allowed_roles = (Role.ADMIN, Role.AUDITOR)
     read_only = True
+
+
+class RoleMatrixPermission(BasePermission):
+    """Different role sets for read (SAFE_METHODS) vs write. Subclass per
+    resource — see e.g. apps.basedata.permissions."""
+
+    read_roles: tuple[str, ...] = ()
+    write_roles: tuple[str, ...] = ()
+
+    def has_permission(self, request, view) -> bool:
+        user = request.user
+        if not (user and user.is_authenticated):
+            return False
+        if user.is_superuser:
+            return True
+        role = getattr(user, "role_name", None)
+        if role is None:
+            return False
+        allowed = (
+            self.read_roles if request.method in SAFE_METHODS else self.write_roles
+        )
+        return role in allowed

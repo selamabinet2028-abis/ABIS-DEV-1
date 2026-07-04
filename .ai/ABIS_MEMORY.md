@@ -1,6 +1,6 @@
 # ABIS_MEMORY.md — Persistent Project Memory
 
-> Last updated: 2026-07-04 (T-001..T-005 DONE — foundation, accounts, audit)
+> Last updated: 2026-07-04 (T-001..T-006 DONE — foundation, accounts, audit, basedata)
 
 ## 1. ABIS Identity
 
@@ -46,9 +46,13 @@ Feature modules begin at T-004.
   AuditContextMiddleware; `/audit-logs/` admin+auditor read-only;
   `audit.services.log_search` ready for person/biometric search endpoints.
   Shared pytest fixtures live in `backend/conftest.py`.
+  **T-006** basedata: Person (P-YYYY-NNNNNN sequence, soft delete, GIN
+  addresses, Fayda FIN unique-nullable), OrgUnit/LookupValue/
+  InvestigationCategory CRUD, validated photo upload, audited person search;
+  `RoleMatrixPermission` for read/write role splits (ADR-015). 124 tests, 99%.
 - **Partially completed:** None.
-- **Unfinished:** T-006 onward in `TASK_QUEUE.md` — basedata, enrollment,
-  matching, remaining modules, T-018 frontend features, deployment.
+- **Unfinished:** T-007 onward in `TASK_QUEUE.md` — enrollment, matching,
+  remaining modules, T-018 frontend features, deployment.
 
 ## 3. Important Technologies (agreed stack)
 

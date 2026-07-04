@@ -43,8 +43,13 @@ IsAdmin / IsOperator / IsInvestigator / IsSupervisor / IsAuditorReadOnly
 (admin passes every gate).
 
 ### basedata
-`CRUD /persons/` (search by name, person_no, national_id) ·
-`CRUD /org-units/` · `CRUD /lookups/` · `CRUD /investigation-categories/`
+`CRUD /persons/` (search by name, person_no, national_id — **searches are
+audited**; DELETE soft-deletes; `person_no` auto-generated `P-YYYY-NNNNNN`) ·
+`POST /persons/{id}/photo/` multipart `{photo}` (jpg/png, ≤ ABIS_MAX_UPLOAD_MB,
+Pillow-verified) · `CRUD /org-units/` · `CRUD /lookups/` (`?category=`) ·
+`CRUD /investigation-categories/`. RBAC: persons read =
+operator/investigator/supervisor/admin, persons write = operator/admin;
+other base data read = any staff role, write = admin.
 
 ### registration & clearance
 `POST /applications/` → creates tracking_no ·
